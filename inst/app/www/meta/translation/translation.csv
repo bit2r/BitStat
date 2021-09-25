@@ -1,0 +1,100 @@
+kr,en
+데이터 선택,Choose Dataset
+데이터,Data
+기술통계,Descriptive Statistics
+가설검정,Hypothesis
+회귀분석,Regression
+분산분석,ANOVA
+보고서,Report
+도움말,Help
+데이터 준비,Prepare data
+데이터 진단,Diagnose data
+데이터 변환,Transform data
+데이터 업로드,Import data
+데이터셋 관리,Manage datasets
+진단 개요,Overview Diagnosis
+변수별 진단,Diagnose variables
+이상치,Overview outliers
+보고서 작성,Create report
+변수 조작,Manipulate variables
+데이터 정제,Clean data
+데이터 분할,Split data
+데이터셋:,Dataset:
+데이터 파일 선택,Choose a data file
+파일 포맷:,File format:
+헤더 포함 여부:,Hearder:
+헤더 포함,Include header
+구분자:,Separator:
+컴마,Comma
+세미콜론,Semicolon
+탭,Tab
+인용문자:,Quote:
+없음,None
+큰 따옴표,Double quotes
+작은 따옴표,Single quotes
+대상 시트번호:,Sheet Index:
+파일선택,Browse...
+샘플 데이터 미리보기,Preview samples
+데이터셋 이름:,Dataset name:
+데이터셋 설명:,Dataset description:
+저장,Save
+데이터셋 목록,Dataset list
+변수정보,Variables
+샘플데이터,Sample data
+데이터셋 삭제,Delete
+데이터셋 편집,Edit
+데이터셋 받기,Download
+수정,Modify
+취소,Cancel
+파일 포맷 선택:,File format:
+파일이름:,File name:
+파일받기,Download
+전체 다운로드,Downloas all
+데이터 진단 개요,Overview of data diagnosis
+데이터 진단 집계:,Summary diagnosis
+데이터 진단 상세:,List of diagnosis
+변수별 데이터 진단,List of diagnosis by variables
+Distribution,Distribution
+Cardinality/Missing,Cardinality/Missing
+Statistics,Statistics
+변수별 이상치 진단,List of outlers
+보고서 커버 설정,Report cover
+보고서 제목:,Title:
+데이터 진단 보고서,Data Diagnosis Report
+보고서 부제목:,Subtitle:
+보고서 제목 색상:,Title color:
+보고서 부제목 색상:,Subtitle color:
+보고서 파라미터 설정,Report parameters
+범주형 변수의 유일값 비율 상한 임계치 (0 ~ 1]:,Percentage of unique values for categorical variables upper threshold (0 ~ 1]:
+수치형 변수의 유일값 개수 하한 임계치 (0 ~ 10]:,Number of unique values for numeric variables lower threshold (0 ~ 10]:
+부가 진단 항목:,Other parameters:
+결측치,Missing value
+음수값,Negative value
+0값,Zero value
+보고서 작성에 사용할 데이터 백분율 (5 ~ 100%]:,Percentage of data to use for reporting (5 ~ 100%]:
+보고서 출력 설정,Report output
+출력 포맷:,Out file format:
+색상 테마:,Color theme:
+보고서 작성자:,Author:
+파일 이름:,File name:
+보고서 출력,Reporting
+변수 조작 수행,Variable Manipulation
+변수 목록:,Variable lists:
+조작 방법:,Manipulation method:
+이름 변경,rename
+형 변환,change_type
+변수 삭제,remove
+수정 변수 이름:,Variable name for change:
+변수이름 변경,Change name
+변경 데이터 형:,Change variable type:
+범주형으로,AS factor
+연속형으로,AS numeric
+정수형으로,AS integer
+문자형으로,AS character
+날짜(Y-M-D)로,AS date (Y-m-d)
+변환 변수 접미어:,Variable name extension:
+변수 형 변환,Change type
+변수삭제,Remove variable
+형 변환 전 데이터 요약,Summary before change type
+형 변환 후 데이터 요약,Summary after change type
+스킨 색상,Skin colors
