@@ -39,8 +39,15 @@ kr,en
 데이터셋 설명:,Dataset description:
 저장,Save
 데이터셋 목록,Dataset list
-변수정보,Variables
-샘플데이터,Sample data
+데이터셋 아이디,Dataset ID
+데이터셋 이름,Dataset name
+데이터셋 설명,Dataset description
+관측치 개수,Number of observations
+변수 개수,Number of variables
+변수 이름,Variable name
+데이터 타입,Data type
+변수 정보,Variables
+샘플 데이터,Sample data
 데이터셋 삭제,Delete
 데이터셋 편집,Edit
 데이터셋 받기,Download
@@ -99,4 +106,8 @@ Statistics,Statistics
 변수삭제,Remove variable
 형 변환 전 데이터 요약,Summary before change type
 형 변환 후 데이터 요약,Summary after change type
+미입력 오류,No input error
+미선택 오류,Unselected error
+정합성 오류,Consistency error
+데이터셋,Dataset
 스킨 색상,Skin colors

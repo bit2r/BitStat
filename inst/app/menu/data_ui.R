@@ -202,7 +202,7 @@ observeEvent(input$save_data, {
   req(input$data_file)
   
   if (is.null(input$data_file)) {
-    alert_message(session, type = "have", name = "데이터셋", coda = TRUE,
+    alert_message(session, type = "have", name = i18n$t("데이터셋"), coda = TRUE,
                   message = "업로드하지 않았습니다.")
     
     return()
@@ -210,13 +210,13 @@ observeEvent(input$save_data, {
   
   
   if (input$name_dataset == "") {
-    alert_message(session, type = "input", name = "데이터셋 이름", coda = TRUE)
+    alert_message(session, type = "input", name = i18n$t("데이터셋 이름"), coda = TRUE)
     
     return()
   }
   
   if (input$desc_dataset == "") {
-    alert_message(session, type = "input", name = "데이터셋 설명", coda = TRUE)
+    alert_message(session, type = "input", name = i18n$t("데이터셋 설명"), coda = TRUE)
     
     return()
   }
@@ -1241,7 +1241,7 @@ observeEvent(input$changeType, {
   
   dfm <- datasets[[id_dataset]]$dataset 
   dfm[, new_name] <- dfm %>% 
-    transmute_at(.vars = vars(change_name), .funs = input$list_change_type) 
+    transmute_at(.vars = vars(all_of(change_name)), .funs = input$list_change_type) 
   
   datasets[[id_dataset]]$dataset <- dfm
   
@@ -1280,7 +1280,7 @@ output$summary_before <- renderPrint({
   id_dataset <- input$combo_dataset
   
   datasets[[id_dataset]]$dataset %>% 
-    select_at(vars(change_name)) %>% 
+    select_at(vars(all_of(change_name))) %>% 
     pull() %>% 
     summary()
 })
@@ -1297,7 +1297,7 @@ output$summary_after <- renderPrint({
   id_dataset <- input$combo_dataset
   
   x <- datasets[[id_dataset]]$dataset %>% 
-    select_at(vars(change_name)) %>% 
+    select_at(vars(all_of(change_name))) %>% 
     pull() 
   
   do.call(input$list_change_type, list(x)) %>% 
