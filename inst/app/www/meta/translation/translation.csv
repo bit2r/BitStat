@@ -81,9 +81,10 @@ Statistics,Statistics
 변수 조작 수행,Variable Manipulation
 변수 목록:,Variable lists:
 조작 방법:,Manipulation method:
-이름 변경,rename
-형 변환,change_type
-변수 삭제,remove
+이름 변경,Rename
+형 변환,Change type
+변수 삭제,Remove
+범주 순서변경,Reorder levels
 수정 변수 이름:,Variable name for change:
 변수이름 변경,Change name
 변경 데이터 형:,Change variable type:
@@ -93,6 +94,7 @@ Statistics,Statistics
 문자형으로,AS character
 날짜(Y-M-D)로,AS date (Y-m-d)
 변환 변수 접미어:,Variable name extension:
+새로 만들 변수의 접미어 입력,Add extension to variable name
 변수 형 변환,Change type
 변수삭제,Remove variable
 형 변환 전 데이터 요약,Summary before change type

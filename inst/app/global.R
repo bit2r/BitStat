@@ -94,10 +94,12 @@ names(element_quote) <- c(i18n$t("없음"), i18n$t("큰 따옴표"),
 element_diag <- list("1", "2", "3")
 names(element_diag) <- c(i18n$t("결측치"), i18n$t("음수값"), i18n$t("0값"))
 
-element_manipulate_variables <- list("rename", "change_type", "remove")
+element_manipulate_variables <- list("Rename", "Change type", "Remove",
+                                     "Reorder levels")
 names(element_manipulate_variables) <- c(i18n$t("이름 변경"), 
                                          i18n$t("형 변환"), 
-                                         i18n$t("변수 삭제"))
+                                         i18n$t("변수 삭제"),
+                                         i18n$t("범주 순서변경"))
 
 element_change_type <- list("as_factor", "as_numeric", "as_integer", 
                             "as_character", "as_date")
