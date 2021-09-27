@@ -36,7 +36,9 @@ kr,en
 파일선택,Browse...
 샘플 데이터 미리보기,Preview samples
 데이터셋 이름:,Dataset name:
+생성할 데이터셋 이름을 입력하세요.,Name of the dataset you want to create
 데이터셋 설명:,Dataset description:
+생성할 데이터의 설명을 입력하세요.,Description of the dataset you want to create
 저장,Save
 데이터셋 목록,Dataset list
 데이터셋 아이디,Dataset ID
