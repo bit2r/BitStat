@@ -159,9 +159,11 @@ output$upload_data <- renderUI({
             style = "padding-top:0px;",
             condition = "input.flag_upload == 1",
             div(style="display: inline-block;vertical-align:top; width: 300px;",
-                textInput("name_dataset", label = i18n$t("데이터셋 이름:"), value = "")),
+                textInput("name_dataset", label = i18n$t("데이터셋 이름:"), value = "",
+                          placeholder = i18n$t("생성할 데이터셋 이름을 입력하세요."))),
             div(style="display: inline-block;vertical-align:top; width: 300px;",
-                textInput("desc_dataset", label = i18n$t("데이터셋 설명:"), value = "")),
+                textInput("desc_dataset", label = i18n$t("데이터셋 설명:"), value = "",
+                          placeholder = i18n$t("생성할 데이터의 설명을 입력하세요."))),
             actionButton("save_data", label = i18n$t("저장"), icon = icon("save"))
           )
         )
@@ -1059,6 +1061,53 @@ output$list_change_type <- renderUI({
 })
 
 
+# 범주 순서변경 출력 -----------------------------------------------------------
+output$panel_reorder_levels <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  target_variable <- dslists()[[id_dataset]]$dataset %>% 
+    select_at(vars(input$list_variables)) %>% 
+    pull()
+  
+  list_levels <- if (is.factor(target_variable)) {
+    levels(target_variable) 
+  } else {
+    levels(as_factor(target_variable))
+  }
+
+  validate(
+    need(is.factor(target_variable), "Reorder levels only support factors. If you want, cast it to factor first.")
+  )
+  
+  validate(
+    need(length(list_levels) < 31, "Interactive re-ordering is only supported up to 30 levels. See ?radiant.data::refactor for information on how to re-order levels in R")
+  )
+  
+  fluidRow(
+    column(
+      width = 10,
+      selectizeInput(
+        inputId = "reorder_levels",
+        i18n$t("범주 순서변경:"),
+        choices = list_levels,
+        selected = list_levels,
+        multiple = TRUE,
+        options = list(placeholder = "Select level(s)",
+                       plugins = list("drag_drop"))
+      ),
+      actionButton(
+        inputId = "reorderVariable",
+        label = i18n$t("범주 순서변경"),
+        icon = icon("sort-alpha-down"),
+        style = "background-color: #90CAF9; border: none;"
+      )
+    )
+  )
+})
+
+
 # 변수 조작 UI 정의 ------------------------------------------------------------
 output$manipulate_variables <- renderUI({
   tagList(
@@ -1143,26 +1192,7 @@ output$manipulate_variables <- renderUI({
           conditionalPanel(
             style = "padding-top:0px;",
             condition = "input.manipulation_method == 'Reorder levels'",
-            fluidRow(
-              column(
-                width = 10,
-                # selectizeInput(
-                #   inputId = "reorder_levels", 
-                #   "Reorder levels:", 
-                #   choices = list_levels,
-                #   selected = list_levels, 
-                #   multiple = TRUE,
-                #   options = list(placeholder = "Select level(s)", 
-                #                  plugins = list("remove_button", "drag_drop"))
-                # ),
-                actionButton(
-                  inputId = "reorderVariable",
-                  label = i18n$t("범주 순서변경"),
-                  icon = icon("sort-alpha-down"),
-                  style = "background-color: #90CAF9; border: none;"
-                )
-              )
-            )
+            uiOutput('panel_reorder_levels')
           )  
           
         )
@@ -1375,5 +1405,5 @@ output$ui_manage_data <- renderUI({
       )
     ) 
   )  
-  
 })
+  

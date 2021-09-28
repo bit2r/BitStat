@@ -108,6 +108,7 @@ Statistics,Statistics
 변수삭제,Remove variable
 형 변환 전 데이터 요약,Summary before change type
 형 변환 후 데이터 요약,Summary after change type
+범주 순서변경:,Reorder levels:
 미입력 오류,No input error
 미선택 오류,Unselected error
 정합성 오류,Consistency error
