@@ -288,6 +288,7 @@ output$imported_ds_list <- renderReactable({
   tab_data_list(tabs)
 })
 
+
 # 데이터셋 관리 UI 정의  -------------------------------------------------------
 output$manage_dataset <- renderUI({
   tagList(
@@ -532,8 +533,6 @@ output$downFileData <- downloadHandler(
   },
   content = function(file) {
     datasets <- dslists()
-    
-    print(file)
     
     obs <- datasets[[selected_dataset_list()]]$dataset
     
@@ -1019,10 +1018,14 @@ output$list_variables <- renderUI({
   list_var <- seq(list_value) %>% 
     purrr::map(
       function(x) {
-        list_value[x]
+        list_value[x] %>% 
+          as.character()
       }
     )
+  
   names(list_var) <- list_nm
+  
+  updateNumericInput(session, "rnd_trans_list", value = 0)
   
   selectInput("list_variables", i18n$t("변수 목록:"),
               choices = list_var,
@@ -1078,24 +1081,25 @@ output$panel_reorder_levels <- renderUI({
   }
 
   validate(
-    need(is.factor(target_variable), "Reorder levels only support factors. If you want, cast it to factor first.")
+    need(is.factor(target_variable), 
+         "Reorder levels only support factors. If you want, cast it to factor first.")
   )
   
   validate(
-    need(length(list_levels) < 31, "Interactive re-ordering is only supported up to 30 levels. See ?radiant.data::refactor for information on how to re-order levels in R")
+    need(length(list_levels) < 31, 
+         "Interactive re-ordering is only supported up to 30 levels. See ?radiant.data::refactor for information on how to re-order levels in R")
   )
   
   fluidRow(
     column(
-      width = 10,
+      width = 12,
       selectizeInput(
         inputId = "reorder_levels",
         i18n$t("범주 순서변경:"),
         choices = list_levels,
         selected = list_levels,
         multiple = TRUE,
-        options = list(placeholder = "Select level(s)",
-                       plugins = list("drag_drop"))
+        options = list(plugins = list("drag_drop"))
       ),
       actionButton(
         inputId = "reorderVariable",
@@ -1106,6 +1110,164 @@ output$panel_reorder_levels <- renderUI({
     )
   )
 })
+
+
+
+# 변수변환 출력 ----------------------------------------------------------------
+output$panel_transform <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+    find_class("numerical", index = FALSE)
+  
+  validate(
+    need(input$list_variables %in% numerical_variable, 
+         "Transform only support numeric and integer.")
+  )
+  
+  fluidRow(
+    column(
+      width = 12,
+      selectizeInput(
+        inputId = "trans_method", 
+        label = i18n$t("적용 함수:"),
+        choices = c(
+          "zscore", "minmax", "log", "log+1", "sqrt", "1/x", "x^2", "x^3"
+        )
+      ),
+      shinyjs::hidden(
+        numericInput("rnd_trans_list", label = "", value = 0)
+      ),
+      actionButton(
+        inputId = "transformVariable",
+        label = i18n$t("변수변환"),
+        icon = icon("square-root-alt"),
+        style = "background-color: #90CAF9; border: none;"
+      )
+    )
+  )
+})
+
+
+# 변수변환 시각화 출력 ---------------------------------------------------------
+output$densityOut <- renderPlot({
+  req(input$combo_dataset)
+  req(input$trans_method)
+  
+  # if (input$rnd_trans_list == 0) {
+  #   return()
+  # }
+  # 
+  # if (get("rnd_trans", envir = .BitStatEnv) != input$rnd_trans_list) {
+  #   return()
+  # }
+  
+  id_dataset <- input$combo_dataset
+  
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+    find_class("numerical", index = FALSE)
+  
+  validate(
+    need(input$list_variables %in% numerical_variable, 
+         "Transform only support numeric and integer.")
+  )
+  
+  target_variable <- dslists()[[id_dataset]]$dataset %>% 
+    select_at(vars(input$list_variables)) %>% 
+    pull()
+  
+  trans <- dlookr::transform(target_variable, method = input$trans_method)
+  assign("trans", trans, envir = .BitStatEnv)
+  
+  plot(trans)
+})
+
+
+# 변수변환 출력 ----------------------------------------------------------------
+output$panel_bin <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+    find_class("numerical", index = FALSE)
+  
+  validate(
+    need(input$list_variables %in% numerical_variable, 
+         "Transform only support numeric and integer.")
+  )
+  
+  fluidRow(
+    column(
+      width = 12,
+      selectizeInput(
+        inputId = "cut_method",
+        label = "비닝 방법:",
+        choices = c("Manual" = "fixed", "Standard deviation" = "sd",
+                    "Equal width" = "equal", "Pretty" = "pretty",
+                    "Quantile" = "quantile", "K-means" = "kmeans")
+      ),
+      uiOutput("no_breaks"),
+      textInput("breaks", "Breaks:"),
+      checkboxInput(
+        inputId = "right",
+        label = "Right-closed intervals (right)",
+        FALSE
+      ),
+      checkboxInput(
+        inputId = "inclowest",
+        label = "Include extreme (include.lowest)",
+        FALSE
+      ),
+      checkboxInput(
+        inputId = "addext",
+        label = "Append extreme values if necessary",
+        FALSE
+      ),
+      numericInput(
+        inputId = "diglab",
+        label = "Label digits (dig.lab)",
+        min = 0, max = 10, value = 4
+      ),
+      actionButton(
+        inputId = "cutButton",
+        label = "비닝",
+        icon = icon("cut"),
+        style = "background-color: #90CAF9; border: none;"
+      )
+    )
+  )
+})
+
+
+##----------------------------------------------------------------------------
+## 03.01.04. 변수의 분포
+##----------------------------------------------------------------------------    
+output$bin_distribution <- renderUI({ 
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  suppressWarnings(
+    dslists()[[id_dataset]]$dataset %>% 
+      select_at(vars(input$list_variables)) %>% 
+      dlookr::describe(statistics = c("mean", "quantiles"),
+               quantiles = c(0, 0.25, 0.5, 0.75, 1)) %>% 
+      select(p00, p25, mean, p50, p75, p100) %>% 
+      mutate_all(round, 2) %>% 
+      rename("최솟값" = p00,
+             "1/4분위" = p25,
+             "중위수" = p50,
+             "산출평균" = mean,
+             "3/4분위" = p75,
+             "최댓값" = p100) %>% 
+      flextable() %>% 
+      htmltools_value()
+  )
+})  
+
 
 
 # 변수 조작 UI 정의 ------------------------------------------------------------
@@ -1124,7 +1286,7 @@ output$manipulate_variables <- renderUI({
               inputId = "manipulation_method",
               label = i18n$t("조작 방법:"),
               choices = element_manipulate_variables,
-              width = 250
+              width = "250"
             )
           ),
           uiOutput('list_variables'),      
@@ -1193,7 +1355,21 @@ output$manipulate_variables <- renderUI({
             style = "padding-top:0px;",
             condition = "input.manipulation_method == 'Reorder levels'",
             uiOutput('panel_reorder_levels')
-          )  
+          ),
+          
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.manipulation_method == 'Transform'",
+            
+            uiOutput('panel_transform')
+          ),
+          
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.manipulation_method == 'Bin'",
+            
+            uiOutput('panel_bin')
+          )           
           
         )
       ),
@@ -1220,7 +1396,47 @@ output$manipulate_variables <- renderUI({
                 verbatimTextOutput("summary_after")
               )
             ) 
-          )  
+          ),
+          
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.manipulation_method == 'Transform'",      
+            fluidRow(
+              style = "padding-top:10px",
+              column(
+                h4(i18n$t("데이터 분포 비교")),
+                width = 12,
+                plotOutput("densityOut")
+              )  
+            )    
+          ),
+          
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.manipulation_method == 'Bin'",      
+            fluidRow(
+              style = "padding-top:10px",
+              column(
+                width = 6, 
+                wellPanel(
+                  style = "padding-top:5px;padding-bottom:27px;",
+                  h4("비닝 선택"),
+                  h5(strong("데이터 분포:")),      
+                  uiOutput("bin_distribution")
+                )    
+              ),
+              column(
+                width = 6, 
+                wellPanel(
+                  style = "padding-top:5px;padding-bottom:10px;",
+                  h4("비닝 미리보기"),
+                  wellPanel(
+                    plotOutput("histOut")
+                  )
+                )
+              )
+            )    
+          )            
         )
       )
     )
@@ -1334,6 +1550,47 @@ output$summary_after <- renderPrint({
     summary()
 })
 
+
+# 범주 순서변경 이벤트 ---------------------------------------------------------
+observeEvent(input$reorderVariable, {
+  reorder_name <- input$list_variables
+  
+  datasets <- dslists()
+  
+  reorder <- function(x, reorder_levels) {
+    ordered(x, levels = reorder_levels)
+  }
+    
+  id_dataset <- input$combo_dataset
+  dfm <- datasets[[id_dataset]]$dataset %>% 
+    mutate_at(vars(reorder_name), reorder, input$reorder_levels)
+  
+  datasets[[id_dataset]]$dataset <- dfm
+  
+  assign("list_datasets", datasets, envir = .BitStatEnv)
+  assign("choosed_dataset", id_dataset, envir = .BitStatEnv)
+  
+  updateNumericInput(session, "rnd_dataset_list", value = sample(1:1000000, 1))
+})
+
+
+# 변수변환 이벤트 --------------------------------------------------------------
+observeEvent(input$transformVariable, {
+  trans_name <- input$list_variables
+  
+  datasets <- dslists()
+  
+  trans <- get("trans", envir = .BitStatEnv) %>% 
+    as.numeric()
+  
+  id_dataset <- input$combo_dataset
+  datasets[[id_dataset]]$dataset[[trans_name]] <- trans
+  
+  assign("list_datasets", datasets, envir = .BitStatEnv)
+  assign("choosed_dataset", id_dataset, envir = .BitStatEnv)
+  
+  updateNumericInput(session, "rnd_dataset_list", value = sample(1:1000000, 1))
+})
 
 
 ################################################################################

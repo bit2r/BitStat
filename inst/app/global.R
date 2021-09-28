@@ -9,10 +9,10 @@
 ##------------------------------------------------------------------------------
 ## 01.01.01. Set the library paths
 ##------------------------------------------------------------------------------
-# .libPaths(c("/hli_appl/home/has01/R/x86_64-pc-linux-gnu-library/3.3",
-#             "/hli_appl/appl/bda/R/x86_64-pc-linux-gnu-library/3.3",
-#             "/opt/microsoft/ropen/3.4.1/lib64/R/library",
-#             "/hli_appl/appl/bda/R/oracle"))
+.libPaths(c("/hli_appl/home/has01/R/x86_64-pc-linux-gnu-library/3.3",
+            "/hli_appl/appl/bda/R/x86_64-pc-linux-gnu-library/3.3",
+            "/opt/microsoft/ropen/3.4.1/lib64/R/library",
+            "/hli_appl/appl/bda/R/oracle"))
 
 ##------------------------------------------------------------------------------
 ## 01.01.02. Load packages that are related shiny & html
@@ -38,7 +38,7 @@ library(reactable)
 library(glue)
 library(dlookr)
 library(xlsx)
-
+library(flextable)
 
 ##==============================================================================
 ## 01.02. Loading Sources
@@ -69,6 +69,7 @@ assign("import_rds", NULL, envir = .BitStatEnv)
 assign("list_datasets", readRDS(paste("www", "meta", "list_datasets.rds",
                                       sep = "/")), envir = .BitStatEnv)
 assign("choosed_dataset", NULL, envir = .BitStatEnv)
+assign("trans", NULL, envir = .BitStatEnv)
 
 
 ##==============================================================================
@@ -93,11 +94,13 @@ element_diag <- list("1", "2", "3")
 names(element_diag) <- c(i18n$t("결측치"), i18n$t("음수값"), i18n$t("0값"))
 
 element_manipulate_variables <- list("Rename", "Change type", "Remove",
-                                     "Reorder levels")
+                                     "Reorder levels", "Transform", "Bin")
 names(element_manipulate_variables) <- c(i18n$t("이름 변경"), 
                                          i18n$t("형 변환"), 
                                          i18n$t("변수 삭제"),
-                                         i18n$t("범주 순서변경"))
+                                         i18n$t("범주 순서변경"),
+                                         i18n$t("변수변환"),
+                                         i18n$t("비닝"))
 
 element_change_type <- list("as_factor", "as_numeric", "as_integer", 
                             "as_character", "as_date")
