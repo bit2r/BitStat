@@ -95,7 +95,6 @@ Statistics,Statistics
 변수 삭제,Remove
 범주 순서변경,Reorder levels
 변수변환,Transform
-비닝,Bin
 수정 변수 이름:,Variable name for change:
 변수이름 변경,Change name
 변경 데이터 형:,Change variable type:
@@ -112,8 +111,15 @@ Statistics,Statistics
 형 변환 후 데이터 요약,Summary after change type
 범주 순서변경:,Reorder levels:
 적용 함수:	Apply function:
+소수점 자리수:,Digits:
 변수변환	Transform
 데이터 분포 비교,Compare distributions
+비닝 방법:,Binning method:
+Bins 갯수:,Number of bins:
+비닝,Bin
+비닝 미리보기,Preview Bins
+데이터 분포:,Data distribution:
+비닝 시각화:,Plot binning:
 미입력 오류,No input error
 미선택 오류,Unselected error
 정합성 오류,Consistency error

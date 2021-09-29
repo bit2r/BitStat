@@ -1030,7 +1030,7 @@ output$list_variables <- renderUI({
   selectInput("list_variables", i18n$t("변수 목록:"),
               choices = list_var,
               selected = list_var[1],
-              width = 250)
+              width = "250")
 })
 
 
@@ -1059,7 +1059,7 @@ output$list_change_type <- renderUI({
     label = i18n$t("변경 데이터 형:"),
     choices = element_change_type,
     selected = element_change_type[1],
-    width = 250
+    width = "250"
   )
 })
 
@@ -1135,7 +1135,16 @@ output$panel_transform <- renderUI({
         label = i18n$t("적용 함수:"),
         choices = c(
           "zscore", "minmax", "log", "log+1", "sqrt", "1/x", "x^2", "x^3"
-        )
+        ),
+        width = "250"
+      ),
+      numericInput(
+        inputId = "trans_digit", 
+        label = i18n$t("소수점 자리수:"), 
+        min = 0,
+        max = 7,
+        value = 2,
+        width = "250"
       ),
       shinyjs::hidden(
         numericInput("rnd_trans_list", label = "", value = 0)
@@ -1155,14 +1164,6 @@ output$panel_transform <- renderUI({
 output$densityOut <- renderPlot({
   req(input$combo_dataset)
   req(input$trans_method)
-  
-  # if (input$rnd_trans_list == 0) {
-  #   return()
-  # }
-  # 
-  # if (get("rnd_trans", envir = .BitStatEnv) != input$rnd_trans_list) {
-  #   return()
-  # }
   
   id_dataset <- input$combo_dataset
   
@@ -1204,13 +1205,14 @@ output$panel_bin <- renderUI({
       width = 12,
       selectizeInput(
         inputId = "cut_method",
-        label = "비닝 방법:",
+        label = i18n$t("비닝 방법:"),
         choices = c("Manual" = "fixed", "Standard deviation" = "sd",
                     "Equal width" = "equal", "Pretty" = "pretty",
-                    "Quantile" = "quantile", "K-means" = "kmeans")
+                    "Quantile" = "quantile", "K-means" = "kmeans"),
+        width = "250"
       ),
       uiOutput("no_breaks"),
-      textInput("breaks", "Breaks:"),
+      textInput("breaks", "Breaks:", width = "250"),
       checkboxInput(
         inputId = "right",
         label = "Right-closed intervals (right)",
@@ -1229,11 +1231,12 @@ output$panel_bin <- renderUI({
       numericInput(
         inputId = "diglab",
         label = "Label digits (dig.lab)",
-        min = 0, max = 10, value = 4
+        min = 0, max = 10, value = 4,
+        width = "250"
       ),
       actionButton(
         inputId = "cutButton",
-        label = "비닝",
+        label = i18n$t("비닝"),
         icon = icon("cut"),
         style = "background-color: #90CAF9; border: none;"
       )
@@ -1249,6 +1252,14 @@ output$bin_distribution <- renderUI({
   req(input$combo_dataset)
   
   id_dataset <- input$combo_dataset
+  
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+    find_class("numerical", index = FALSE)
+  
+  validate(
+    need(input$list_variables %in% numerical_variable, 
+         "Transform only support numeric and integer.")
+  )
   
   suppressWarnings(
     dslists()[[id_dataset]]$dataset %>% 
@@ -1267,6 +1278,133 @@ output$bin_distribution <- renderUI({
       htmltools_value()
   )
 })  
+
+
+
+
+
+##----------------------------------------------------------------------------
+## 03.01.05. Breaks 개수
+##----------------------------------------------------------------------------  
+## referenced by icut.R of questionr package ---------------------------------
+get_breaks <- function(b, compute = FALSE) {
+  if (b == "") return(NULL)
+  if (!stringr::str_detect(b, ",")) return(NULL)
+  if (stringr::str_detect(b, ",$")) return(NULL)
+  
+  b <- gsub(", *$", "", b)
+  b <- paste0("c(", b, ")")
+  
+  breaks <- sort(unique(eval(parse(text = b))))
+  
+  ## Code taken directly from `cut` source code
+  if (length(breaks) == 1L && compute) {
+    if (is.na(breaks) || breaks < 2L)
+      stop("invalid number of intervals")
+    nb <- as.integer(breaks + 1)
+    dx <- diff(rx <- range(bin_variable(), na.rm = TRUE))
+    if (dx == 0)
+      dx <- abs(rx[1L])
+    
+    breaks <- seq.int(rx[1L] - dx / 1000, rx[2L] + dx / 1000, length.out = nb)
+  }
+  
+  if (length(breaks) > 1 && input$addext) {
+    if (min(breaks, na.rm = TRUE) > min(bin_variable(), na.rm = TRUE)) 
+      breaks <- c(min(bin_variable(), na.rm = TRUE), breaks)
+    if (max(breaks, na.rm = TRUE) < max(bin_variable(), na.rm = TRUE)) 
+      breaks <- c(breaks, max(bin_variable(), na.rm = TRUE))
+  }
+  
+  breaks
+}
+
+output$no_breaks <- renderUI({
+  numericInput(
+    inputId = "no_breaks", 
+    label = i18n$t("Bins 갯수:"), 
+    value = 6, 
+    min = 2, 
+    step = 1,
+    width = "250"
+  )
+})
+
+
+##----------------------------------------------------------------------------
+## 03.01.06. Breaks
+##----------------------------------------------------------------------------
+## referenced by icut.R of questionr package ---------------------------------
+observe(
+  if (req(input$cut_method) != "fixed") {
+    no_breaks <- reactive({
+      if (is.null(req(input$no_breaks))) return(2)
+      if (is.na(req(input$no_breaks))) return(2)
+      if (req(input$no_breaks) < 2) return(2)
+  
+      return(input$no_breaks)
+    })
+  
+    # updateNumericInput(session, "showable_bins", value = 0)
+  
+    updateTextInput(
+      session,
+      inputId = "breaks",
+      value = classInt::classIntervals(
+        bin_variable(), n = ifelse(is.null(no_breaks()), 6, no_breaks()),
+        style = req(input$cut_method))$brks
+    )
+  }
+)
+
+
+##----------------------------------------------------------------------------
+## 03.01.07. Breaks 개수 토글
+##----------------------------------------------------------------------------
+observe({
+  toggleState(
+    id = "no_breaks",
+    condition = !is.null(input$list_variables) &
+      !input$cut_method %in% c("", "fixed"))
+})
+
+
+##----------------------------------------------------------------------------
+## 03.01.08. 히스토그램 출력
+##----------------------------------------------------------------------------
+## reactive variable object
+bin_variable <- reactive({
+  id_dataset <- input$combo_dataset
+
+  target_variable <- dslists()[[id_dataset]]$dataset %>%
+    select_at(vars(input$list_variables)) %>%
+    pull()
+})
+
+
+## referenced by icut.R of questionr package ---------------------------------
+output$histOut <- renderPlot({
+  req(input$list_variables)
+  
+  if (is.null(bin_variable())) return()
+
+  graphics::hist(bin_variable(),
+                 col = "steelblue", border = "white",
+                 main = paste("Binning with", input$cut_method),
+                 xlab = input$list_variables)
+
+  if (!is.null(input$breaks)) {
+    breaks <- get_breaks(input$breaks, compute = TRUE)
+ 
+    for (b in breaks)
+      graphics::abline(v = b, col = "red", lwd = 1, lty = 2)
+  }
+})
+
+
+
+
+
 
 
 
@@ -1300,7 +1438,7 @@ output$manipulate_variables <- renderUI({
                 textInput(
                   inputId = "rename_variable",
                   label = i18n$t("수정 변수 이름:"),
-                  value = "", width = 250
+                  value = "", width = "250"
                 ),
                 actionButton(
                   inputId = "renameVariable",
@@ -1322,7 +1460,7 @@ output$manipulate_variables <- renderUI({
                 textInput(
                   inputId = "ext_change_type",
                   label = i18n$t("변환 변수 접미어:"),
-                  value = "", width = 250,
+                  value = "", width = "250",
                   placeholder = "Provide name for missing levels"
                 ),
                 actionButton(
@@ -1421,7 +1559,7 @@ output$manipulate_variables <- renderUI({
                 wellPanel(
                   style = "padding-top:5px;padding-bottom:27px;",
                   h4("비닝 선택"),
-                  h5(strong("데이터 분포:")),      
+                  h5(strong(i18n$t("데이터 분포:"))),      
                   uiOutput("bin_distribution")
                 )    
               ),
@@ -1429,7 +1567,7 @@ output$manipulate_variables <- renderUI({
                 width = 6, 
                 wellPanel(
                   style = "padding-top:5px;padding-bottom:10px;",
-                  h4("비닝 미리보기"),
+                  h4(i18n$t("비닝 미리보기")),
                   wellPanel(
                     plotOutput("histOut")
                   )
@@ -1581,7 +1719,8 @@ observeEvent(input$transformVariable, {
   datasets <- dslists()
   
   trans <- get("trans", envir = .BitStatEnv) %>% 
-    as.numeric()
+    as.numeric() %>% 
+    round(input$trans_digit)
   
   id_dataset <- input$combo_dataset
   datasets[[id_dataset]]$dataset[[trans_name]] <- trans
