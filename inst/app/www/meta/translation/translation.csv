@@ -119,7 +119,19 @@ Bins 갯수:,Number of bins:
 비닝,Bin
 비닝 미리보기,Preview Bins
 데이터 분포:,Data distribution:
+최솟값,min
+5%분위,5%th
+10%분위,10%th
+1/4분위,Q1
+중위수,median
+산술평균,mean
+3/4분위,Q3
+90%분위,90%th
+95%분위,95%th
+최댓값,max
 비닝 시각화:,Plot binning:
+비닝 정의,Define bins
+돗수 분포 테이블:,Frequency table:
 미입력 오류,No input error
 미선택 오류,Unselected error
 정합성 오류,Consistency error

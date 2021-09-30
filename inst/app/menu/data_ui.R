@@ -1186,7 +1186,22 @@ output$densityOut <- renderPlot({
 })
 
 
-# 변수변환 출력 ----------------------------------------------------------------
+## reactive variable object
+bin_variable <- reactive({
+  id_dataset <- input$combo_dataset
+  
+  target_variable <- dslists()[[id_dataset]]$dataset %>%
+    select_at(vars(input$list_variables)) %>%
+    pull()
+})
+
+
+
+##------------------------------------------------------------------------------
+## 비닝
+##------------------------------------------------------------------------------
+
+# 비닝 출력 --------------------------------------------------------------------
 output$panel_bin <- renderUI({
   req(input$combo_dataset)
   
@@ -1245,9 +1260,7 @@ output$panel_bin <- renderUI({
 })
 
 
-##----------------------------------------------------------------------------
-## 03.01.04. 변수의 분포
-##----------------------------------------------------------------------------    
+# 변수의 분포-------------------------------------------------------------------    
 output$bin_distribution <- renderUI({ 
   req(input$combo_dataset)
   
@@ -1265,28 +1278,27 @@ output$bin_distribution <- renderUI({
     dslists()[[id_dataset]]$dataset %>% 
       select_at(vars(input$list_variables)) %>% 
       dlookr::describe(statistics = c("mean", "quantiles"),
-               quantiles = c(0, 0.25, 0.5, 0.75, 1)) %>% 
-      select(p00, p25, mean, p50, p75, p100) %>% 
+               quantiles = c(0, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 1)) %>% 
+      select(p00, p05, p10, p25, mean, p50, p75, p90, p95, p100) %>% 
       mutate_all(round, 2) %>% 
-      rename("최솟값" = p00,
-             "1/4분위" = p25,
-             "중위수" = p50,
-             "산출평균" = mean,
-             "3/4분위" = p75,
-             "최댓값" = p100) %>% 
+      rename(!!i18n$t("최솟값")   := p00,
+             !!i18n$t("5%분위")   := p05,
+             !!i18n$t("10%분위")  := p10,             
+             !!i18n$t("1/4분위")  := p25,
+             !!i18n$t("중위수")   := p50,
+             !!i18n$t("산술평균") := mean,
+             !!i18n$t("3/4분위")  := p75,
+             !!i18n$t("90%분위")  := p90,
+             !!i18n$t("95%분위")  := p95,
+             !!i18n$t("최댓값")   := p100) %>% 
       flextable() %>% 
       htmltools_value()
   )
 })  
 
 
-
-
-
-##----------------------------------------------------------------------------
-## 03.01.05. Breaks 개수
-##----------------------------------------------------------------------------  
-## referenced by icut.R of questionr package ---------------------------------
+# Breaks 개수 ------------------------------------------------------------------  
+# referenced by icut.R of questionr package 
 get_breaks <- function(b, compute = FALSE) {
   if (b == "") return(NULL)
   if (!stringr::str_detect(b, ",")) return(NULL)
@@ -1319,6 +1331,7 @@ get_breaks <- function(b, compute = FALSE) {
   breaks
 }
 
+
 output$no_breaks <- renderUI({
   numericInput(
     inputId = "no_breaks", 
@@ -1331,10 +1344,9 @@ output$no_breaks <- renderUI({
 })
 
 
-##----------------------------------------------------------------------------
-## 03.01.06. Breaks
-##----------------------------------------------------------------------------
-## referenced by icut.R of questionr package ---------------------------------
+
+# Breaks -----------------------------------------------------------------------
+## referenced by icut.R of questionr package 
 observe(
   if (req(input$cut_method) != "fixed") {
     no_breaks <- reactive({
@@ -1346,7 +1358,7 @@ observe(
     })
   
     # updateNumericInput(session, "showable_bins", value = 0)
-  
+    
     updateTextInput(
       session,
       inputId = "breaks",
@@ -1358,9 +1370,7 @@ observe(
 )
 
 
-##----------------------------------------------------------------------------
-## 03.01.07. Breaks 개수 토글
-##----------------------------------------------------------------------------
+# Breaks 개수 토글 -------------------------------------------------------------
 observe({
   toggleState(
     id = "no_breaks",
@@ -1369,25 +1379,28 @@ observe({
 })
 
 
-##----------------------------------------------------------------------------
-## 03.01.08. 히스토그램 출력
-##----------------------------------------------------------------------------
-## reactive variable object
-bin_variable <- reactive({
-  id_dataset <- input$combo_dataset
 
-  target_variable <- dslists()[[id_dataset]]$dataset %>%
-    select_at(vars(input$list_variables)) %>%
-    pull()
-})
-
-
-## referenced by icut.R of questionr package ---------------------------------
+# 히스토그램 출력 --------------------------------------------------------------
+## referenced by icut.R of questionr package 
 output$histOut <- renderPlot({
+  req(input$combo_dataset)
   req(input$list_variables)
+  req(input$no_breaks)  
   
   if (is.null(bin_variable())) return()
 
+  id_dataset <- input$combo_dataset
+  
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+    find_class("numerical", index = FALSE)
+  
+  validate(
+    need(input$list_variables %in% numerical_variable, 
+         "Transform only support numeric and integer.")
+  )
+  
+  if (!input$list_variables %in% numerical_variable) return()
+    
   graphics::hist(bin_variable(),
                  col = "steelblue", border = "white",
                  main = paste("Binning with", input$cut_method),
@@ -1401,6 +1414,66 @@ output$histOut <- renderPlot({
   }
 })
 
+
+
+# 비닝 리스트 ------------------------------------------------------------------ 
+bins_list <- reactive({
+  req(input$list_variables)
+  req(input$no_breaks)  
+  
+  if (is.null(input$breaks) | input$breaks == "") {
+    return()
+  }
+  
+  cut(bin_variable(),
+      include.lowest = input$inclowest,
+      right = input$right,
+      dig.lab = input$diglab,
+      breaks = get_breaks(input$breaks))
+}) 
+
+
+
+# 비닝 Bar plot ---------------------------------------------------------------- 
+output$barOut <- renderPlot({
+  req(input$list_variables)
+  req(bins_list())
+  
+  graphics::plot(bins_list(), col = "steelblue", border = "white")
+})
+
+
+
+# 비닝 Summary table ----------------------------------------------------------- 
+output$tab_bins <- renderReactable({
+  if (is.null(bins_list())) return()
+  
+  bins_list() %>% 
+    table(useNA = "always") %>% 
+    as.data.frame() %>% 
+    rename("Bins" = 1, 
+           "Frequency" = 2) %>% 
+    mutate("Ratio" = Frequency / sum(Frequency)) %>% 
+    reactable(
+      columns = list(
+        Bins = colDef(
+          na = "<NA>"
+        ),
+        Frequency = colDef(
+          format = colFormat(
+            separators = TRUE
+          )
+        ),
+        Ratio = colDef(
+          name = "Frequency (%)",
+          format = colFormat(
+            percent = TRUE,
+            digits = 2
+          )
+        )
+      )
+    )
+})
 
 
 
@@ -1552,28 +1625,34 @@ output$manipulate_variables <- renderUI({
           conditionalPanel(
             style = "padding-top:0px;",
             condition = "input.manipulation_method == 'Bin'",      
-            fluidRow(
-              style = "padding-top:10px",
-              column(
-                width = 6, 
-                wellPanel(
-                  style = "padding-top:5px;padding-bottom:27px;",
-                  h4("비닝 선택"),
+            style = "padding-top:10px",
+            wellPanel(
+              style = "padding-top:5px",
+              fluidRow(
+                column(
+                  width = 12, 
+                  style = "padding-top:0px;padding-bottom:10px;",
+                  h4(i18n$t("비닝 미리보기")),
                   h5(strong(i18n$t("데이터 분포:"))),      
                   uiOutput("bin_distribution")
-                )    
-              ),
-              column(
-                width = 6, 
-                wellPanel(
-                  style = "padding-top:5px;padding-bottom:10px;",
-                  h4(i18n$t("비닝 미리보기")),
-                  wellPanel(
-                    plotOutput("histOut")
-                  )
+                ),  
+                column(
+                  width = 6, 
+                  h5(strong("Distribution with breaks:")),   
+                  plotOutput("histOut")
+                ),  
+                column(
+                  width = 6, 
+                  h5(strong("Bins frequency:")),
+                  plotOutput("barOut")
                 )
               )
-            )    
+            ),
+            wellPanel(
+              h4(i18n$t("비닝 정의")),
+              h5(strong(i18n$t("돗수 분포 테이블:"))),  
+              reactableOutput("tab_bins", width = "100%")
+            )  
           )            
         )
       )
