@@ -1082,12 +1082,12 @@ output$panel_reorder_levels <- renderUI({
 
   validate(
     need(is.factor(target_variable), 
-         "Reorder levels only support factors. If you want, cast it to factor first.")
+         i18n$t("범주 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
   )
   
   validate(
     need(length(list_levels) < 31, 
-         "Interactive re-ordering is only supported up to 30 levels. See ?radiant.data::refactor for information on how to re-order levels in R")
+         i18n$t("범주 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다."))
   )
   
   fluidRow(
@@ -1124,7 +1124,7 @@ output$panel_transform <- renderUI({
   
   validate(
     need(input$list_variables %in% numerical_variable, 
-         "Transform only support numeric and integer.")
+         i18n$t("변수변환은 정수와 실수만 지원합니다."))
   )
   
   fluidRow(
@@ -1172,7 +1172,7 @@ output$densityOut <- renderPlot({
   
   validate(
     need(input$list_variables %in% numerical_variable, 
-         "Transform only support numeric and integer.")
+         i18n$t("변수변환은 정수와 실수만 지원합니다."))
   )
   
   target_variable <- dslists()[[id_dataset]]$dataset %>% 
@@ -1212,7 +1212,7 @@ output$panel_bin <- renderUI({
   
   validate(
     need(input$list_variables %in% numerical_variable, 
-         "Transform only support numeric and integer.")
+         i18n$t("비닝은 정수와 실수만 지원합니다."))
   )
   
   fluidRow(
@@ -1224,31 +1224,37 @@ output$panel_bin <- renderUI({
         choices = c("Manual" = "fixed", "Standard deviation" = "sd",
                     "Equal width" = "equal", "Pretty" = "pretty",
                     "Quantile" = "quantile", "K-means" = "kmeans"),
+        selected = "quantile",
         width = "250"
       ),
       uiOutput("no_breaks"),
-      textInput("breaks", "Breaks:", width = "250"),
+      textInput("breaks", i18n$t("비닝 컷 포인트:"), width = "250"),
       checkboxInput(
         inputId = "right",
-        label = "Right-closed intervals (right)",
+        label = i18n$t("오른쪽 폐구간 여부 (right)"),
         FALSE
       ),
       checkboxInput(
         inputId = "inclowest",
-        label = "Include extreme (include.lowest)",
+        label = i18n$t("극단값 포함 여부 (include.lowest)"),
         FALSE
       ),
       checkboxInput(
         inputId = "addext",
-        label = "Append extreme values if necessary",
+        label = i18n$t("가능할 경우의 극단값 추가 여부"),
         FALSE
       ),
       numericInput(
         inputId = "diglab",
-        label = "Label digits (dig.lab)",
+        label = i18n$t("소수점 라벨 표현 자리수 (dig.lab):"),
         min = 0, max = 10, value = 4,
         width = "250"
       ),
+      textInput(
+        inputId = "bin_variable",
+        label = i18n$t("생성 변수 접미어:"),
+        value = "_bin", width = "250"
+      ),      
       actionButton(
         inputId = "cutButton",
         label = i18n$t("비닝"),
@@ -1265,13 +1271,13 @@ output$bin_distribution <- renderUI({
   req(input$combo_dataset)
   
   id_dataset <- input$combo_dataset
-  
-  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>%
     find_class("numerical", index = FALSE)
-  
+
   validate(
-    need(input$list_variables %in% numerical_variable, 
-         "Transform only support numeric and integer.")
+    need(input$list_variables %in% numerical_variable,
+         i18n$t("비닝은 정수와 실수만 지원합니다."))
   )
   
   suppressWarnings(
@@ -1335,7 +1341,7 @@ get_breaks <- function(b, compute = FALSE) {
 output$no_breaks <- renderUI({
   numericInput(
     inputId = "no_breaks", 
-    label = i18n$t("Bins 갯수:"), 
+    label = i18n$t("범주 레벨 갯수:"), 
     value = 6, 
     min = 2, 
     step = 1,
@@ -1349,6 +1355,17 @@ output$no_breaks <- renderUI({
 ## referenced by icut.R of questionr package 
 observe(
   if (req(input$cut_method) != "fixed") {
+    id_dataset <- input$combo_dataset
+    
+    numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+      find_class("numerical", index = FALSE)
+    
+    if (input$list_variables %in% numerical_variable) {
+      x <- bin_variable()
+    } else {
+      x <- 1:100
+    }
+    
     no_breaks <- reactive({
       if (is.null(req(input$no_breaks))) return(2)
       if (is.na(req(input$no_breaks))) return(2)
@@ -1356,14 +1373,12 @@ observe(
   
       return(input$no_breaks)
     })
-  
-    # updateNumericInput(session, "showable_bins", value = 0)
     
     updateTextInput(
       session,
       inputId = "breaks",
       value = classInt::classIntervals(
-        bin_variable(), n = ifelse(is.null(no_breaks()), 6, no_breaks()),
+        x, n = ifelse(is.null(no_breaks()), 6, no_breaks()),
         style = req(input$cut_method))$brks
     )
   }
@@ -1390,15 +1405,15 @@ output$histOut <- renderPlot({
   if (is.null(bin_variable())) return()
 
   id_dataset <- input$combo_dataset
-  
-  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>%
     find_class("numerical", index = FALSE)
-  
+
   validate(
-    need(input$list_variables %in% numerical_variable, 
-         "Transform only support numeric and integer.")
+    need(input$list_variables %in% numerical_variable,
+         i18n$t("비닝은 정수와 실수만 지원합니다."))
   )
-  
+
   if (!input$list_variables %in% numerical_variable) return()
     
   graphics::hist(bin_variable(),
@@ -1420,6 +1435,15 @@ output$histOut <- renderPlot({
 bins_list <- reactive({
   req(input$list_variables)
   req(input$no_breaks)  
+  
+  id_dataset <- input$combo_dataset
+
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>%
+    find_class("numerical", index = FALSE)
+
+  if (!input$list_variables %in% numerical_variable) {
+    return()
+  }
   
   if (is.null(input$breaks) | input$breaks == "") {
     return()
@@ -1457,15 +1481,17 @@ output$tab_bins <- renderReactable({
     reactable(
       columns = list(
         Bins = colDef(
+          name = i18n$t("범주 레벨"),
           na = "<NA>"
         ),
         Frequency = colDef(
+          name = i18n$t("돗수"),
           format = colFormat(
             separators = TRUE
           )
         ),
         Ratio = colDef(
-          name = "Frequency (%)",
+          name = "상대돗수 (백분율)",
           format = colFormat(
             percent = TRUE,
             digits = 2
@@ -1476,8 +1502,50 @@ output$tab_bins <- renderReactable({
 })
 
 
-
-
+output$panel_bin_out <- renderUI({ 
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
+    find_class("numerical", index = FALSE)
+  
+  validate(
+    need(input$list_variables %in% numerical_variable, 
+         i18n$t("비닝은 정수와 실수만 지원합니다."))
+  )
+  
+  tagList(
+    wellPanel(
+      style = "padding-top:5px",
+      fluidRow(
+        column(
+          width = 12, 
+          style = "padding-top:0px;padding-bottom:10px;",
+          h4(i18n$t("비닝 미리보기")),
+          h5(strong(i18n$t("데이터 분포:"))),      
+          uiOutput("bin_distribution")
+        ),  
+        column(
+          width = 6, 
+          h5(strong(i18n$t("데이터 분포 시각화:"))),   
+          plotOutput("histOut")
+        ),  
+        column(
+          width = 6, 
+          h5(strong(i18n$t("돗수 분포 시각화:"))),
+          plotOutput("barOut")
+        )
+      )
+    ),
+    
+    wellPanel(
+      h4(i18n$t("비닝 정의")),
+      h5(strong(i18n$t("돗수 분포 테이블:"))),  
+      reactableOutput("tab_bins", width = "100%")
+    ) 
+  )
+})  
 
 
 
@@ -1534,7 +1602,7 @@ output$manipulate_variables <- renderUI({
                   inputId = "ext_change_type",
                   label = i18n$t("변환 변수 접미어:"),
                   value = "", width = "250",
-                  placeholder = "Provide name for missing levels"
+                  placeholder = i18n$t("새로 만들 변수의 접미어 입력")
                 ),
                 actionButton(
                   inputId = "changeType",
@@ -1626,33 +1694,7 @@ output$manipulate_variables <- renderUI({
             style = "padding-top:0px;",
             condition = "input.manipulation_method == 'Bin'",      
             style = "padding-top:10px",
-            wellPanel(
-              style = "padding-top:5px",
-              fluidRow(
-                column(
-                  width = 12, 
-                  style = "padding-top:0px;padding-bottom:10px;",
-                  h4(i18n$t("비닝 미리보기")),
-                  h5(strong(i18n$t("데이터 분포:"))),      
-                  uiOutput("bin_distribution")
-                ),  
-                column(
-                  width = 6, 
-                  h5(strong("Distribution with breaks:")),   
-                  plotOutput("histOut")
-                ),  
-                column(
-                  width = 6, 
-                  h5(strong("Bins frequency:")),
-                  plotOutput("barOut")
-                )
-              )
-            ),
-            wellPanel(
-              h4(i18n$t("비닝 정의")),
-              h5(strong(i18n$t("돗수 분포 테이블:"))),  
-              reactableOutput("tab_bins", width = "100%")
-            )  
+            uiOutput('panel_bin_out')
           )            
         )
       )

@@ -1,0 +1,50 @@
+CHANGES IN R VERSION 0.5.0.9001:
+  BUG FIXES:
+
+    * 
+
+  MAJOR CHANGES:
+    
+    * 
+      
+  MINOR CHANGES:
+    
+    * 
+    
+    
+      
+CHANGES IN R VERSION 0.5.0.9000:
+  FUCTION LIST:
+
+    * Prepare data menu 
+      - Import data
+        . CSV(TSV) files
+        . Excel files
+        . R data files
+      - Manage data
+        . Overview dataset
+        . Edit dataset information
+        . Download datasets
+        . Export all datasets and meta data
+      
+    * Diagnose data
+      - Overview of data diagnosis
+      - Overview variables
+      - Overview outlers
+      - Reporting
+        . PDF
+        . html
+      
+    * Transform data
+      - Manipulate variables
+        . Rename variables
+        . Change data type
+        . Remove variables
+        . Reorder levels
+        . Transform
+        . Bin
+      
+  FEATURE LIST:      
+    * Support multi language
+      - Korean
+      - English
