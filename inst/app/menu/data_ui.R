@@ -1256,7 +1256,7 @@ output$panel_bin <- renderUI({
         value = "_bin", width = "250"
       ),      
       actionButton(
-        inputId = "cutButton",
+        inputId = "binVariable",
         label = i18n$t("비닝"),
         icon = icon("cut"),
         style = "background-color: #90CAF9; border: none;"
@@ -1851,6 +1851,24 @@ observeEvent(input$transformVariable, {
   
   updateNumericInput(session, "rnd_dataset_list", value = sample(1:1000000, 1))
 })
+
+
+# 비닝 이벤트 ------------------------------------------------------------------
+observeEvent(input$binVariable, {
+  bin_name <- paste0(input$list_variables, input$bin_variable)
+  
+  datasets <- dslists()
+  id_dataset <- input$combo_dataset
+  
+  datasets[[id_dataset]]$dataset <- datasets[[id_dataset]]$dataset %>% 
+    mutate(!!bin_name := bins_list())
+
+  assign("list_datasets", datasets, envir = .BitStatEnv)
+  assign("choosed_dataset", id_dataset, envir = .BitStatEnv)
+  
+  updateNumericInput(session, "rnd_dataset_list", value = sample(1:1000000, 1))
+})
+
 
 
 ################################################################################
