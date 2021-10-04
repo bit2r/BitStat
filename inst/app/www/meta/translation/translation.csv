@@ -56,8 +56,8 @@ kr,en
 수정,Modify
 취소,Cancel
 파일 포맷 선택:,File format:
-파일이름:,File name:
-파일받기,Download
+파일 이름:,File name:
+파일 받기,Download
 전체 다운로드,Downloas all
 데이터 진단 개요,Overview of data diagnosis
 데이터 진단 집계:,Summary diagnosis
@@ -85,7 +85,6 @@ Statistics,Statistics
 출력 포맷:,Out file format:
 색상 테마:,Color theme:
 보고서 작성자:,Author:
-파일 이름:,File name:
 보고서 출력,Reporting
 변수 조작 수행,Variable Manipulation
 변수 목록:,Variable lists:
@@ -93,10 +92,17 @@ Statistics,Statistics
 이름 변경,Rename
 형 변환,Change type
 변수 삭제,Remove
-범주 순서변경,Reorder levels
-범주 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,Reorder levels only support factors. If you want, cast it to factor first.
-범주 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-ordering is only supported up to 30 levels.
-범주 순서변경:,Reorder levels:
+범주 레벨 순서변경,Reorder levels
+범주 레벨 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorder levels only support factors. If you want, cast it to factor first."
+범주 레벨 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-ordering is only supported up to 30 levels.
+범주 레벨 순서변경:,Reorder levels:
+변경/병합 대상 레벨:,Reorganize levels:
+범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorganize levels only support factors. If you want, cast it to factor first."
+범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-organizng is only supported up to 30 levels.
+대체 레벨 이름:,Replacement level name:
+대체할 라벨 이름을 입력하세요,Provide name for re-orgnaze levels
+변수 이름:,Variable name:
+범주 레벨 변경/병합,Reorganize levels
 변수변환,Transform
 수정 변수 이름:,Variable name for change:
 변수이름 변경,Change name
@@ -114,7 +120,6 @@ Statistics,Statistics
 형 변환 후 데이터 요약,Summary after change type
 적용 함수:	Apply function:
 소수점 자리수:,Digits:
-변수변환	Transform
 데이터 분포 비교,Compare distributions
 변수변환은 정수와 실수만 지원합니다.,Transform only support numeric and integer.
 비닝 방법:,Binning method:

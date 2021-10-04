@@ -380,8 +380,8 @@ output$manage_dataset <- renderUI({
                   )
                 ),
                 
-                textInput("fname_d_file", i18n$t("파일이름:"), value = ""),
-                downloadButton("downFileData", i18n$t("파일받기"),
+                textInput("fname_d_file", i18n$t("파일 이름:"), value = ""),
+                downloadButton("downFileData", i18n$t("파일 받기"),
                                style = "background-color: #90CAF9;border: none;"),
                 actionButton("cancelFileButton", i18n$t("취소"), 
                              icon = icon("window-close"),
@@ -400,8 +400,8 @@ output$manage_dataset <- renderUI({
             fluidRow(
               column(
                 width = 3,
-                textInput("fname_d_dataset", i18n$t("파일이름:"), value = ""),
-                downloadButton("downDatasetData", i18n$t("파일받기"),
+                textInput("fname_d_dataset", i18n$t("파일 이름:"), value = ""),
+                downloadButton("downDatasetData", i18n$t("파일 받기"),
                                style = "background-color: #90CAF9;border: none;")
               )
             )
@@ -1064,7 +1064,7 @@ output$list_change_type <- renderUI({
 })
 
 
-# 범주 순서변경 출력 -----------------------------------------------------------
+# 범주 레벨 순서변경 출력 ------------------------------------------------------
 output$panel_reorder_levels <- renderUI({
   req(input$combo_dataset)
   
@@ -1082,12 +1082,12 @@ output$panel_reorder_levels <- renderUI({
 
   validate(
     need(is.factor(target_variable), 
-         i18n$t("범주 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
+         i18n$t("범주 레벨 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
   )
   
   validate(
     need(length(list_levels) < 31, 
-         i18n$t("범주 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다."))
+         i18n$t("범주 레벨 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다."))
   )
   
   fluidRow(
@@ -1095,7 +1095,7 @@ output$panel_reorder_levels <- renderUI({
       width = 12,
       selectizeInput(
         inputId = "reorder_levels",
-        i18n$t("범주 순서변경:"),
+        label = i18n$t("범주 레벨 순서변경:"),
         choices = list_levels,
         selected = list_levels,
         multiple = TRUE,
@@ -1103,8 +1103,69 @@ output$panel_reorder_levels <- renderUI({
       ),
       actionButton(
         inputId = "reorderVariable",
-        label = i18n$t("범주 순서변경"),
+        label = i18n$t("범주 레벨 순서변경"),
         icon = icon("sort-alpha-down"),
+        style = "background-color: #90CAF9; border: none;"
+      )
+    )
+  )
+})
+
+
+
+
+# 범주 레벨 변경/병합 출력 -----------------------------------------------------
+output$panel_reorg_levels <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  target_variable <- dslists()[[id_dataset]]$dataset %>% 
+    select_at(vars(input$list_variables)) %>% 
+    pull()
+  
+  list_levels <- if (is.factor(target_variable)) {
+    levels(target_variable) 
+  } else {
+    levels(as_factor(target_variable))
+  }
+  
+  validate(
+    need(is.factor(target_variable), 
+         i18n$t("범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
+  )
+  
+  validate(
+    need(length(list_levels) < 31, 
+         i18n$t("범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다."))
+  )
+  
+  fluidRow(
+    column(
+      width = 12,
+      selectizeInput(
+        inputId = "reorg_levels",
+        label = i18n$t("변경/병합 대상 레벨:"),
+        choices = list_levels,
+        selected = list_levels,
+        multiple = TRUE,
+        options = list(plugins = list("remove_button"))
+      ),
+      textInput(
+        inputId = "new_levels", 
+        label = "대체 레벨 이름:",
+        placeholder = "대체할 라벨 이름을 입력하세요",
+        value = NA
+      ),
+      textInput(
+        inputId = "reorg_variable_name", 
+        label = "변수 이름:",
+        value = input$list_variables
+      ),      
+      actionButton(
+        inputId = "reorgVariable",
+        label = i18n$t("범주 레벨 변경/병합"),
+        icon = icon("tags"),
         style = "background-color: #90CAF9; border: none;"
       )
     )
@@ -1548,6 +1609,8 @@ output$panel_bin_out <- renderUI({
 })  
 
 
+# reference https://github.com/radiant-rstats/radiant.data in transform_ui.R
+
 
 # 변수 조작 UI 정의 ------------------------------------------------------------
 output$manipulate_variables <- renderUI({
@@ -1635,6 +1698,12 @@ output$manipulate_variables <- renderUI({
             condition = "input.manipulation_method == 'Reorder levels'",
             uiOutput('panel_reorder_levels')
           ),
+          
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.manipulation_method == 'Reorganize levels'",
+            uiOutput('panel_reorg_levels')
+          ),          
           
           conditionalPanel(
             style = "padding-top:0px;",
@@ -1810,7 +1879,7 @@ output$summary_after <- renderPrint({
 })
 
 
-# 범주 순서변경 이벤트 ---------------------------------------------------------
+# 범주 레벨 순서변경 이벤트 ----------------------------------------------------
 observeEvent(input$reorderVariable, {
   reorder_name <- input$list_variables
   
@@ -1823,6 +1892,31 @@ observeEvent(input$reorderVariable, {
   id_dataset <- input$combo_dataset
   dfm <- datasets[[id_dataset]]$dataset %>% 
     mutate_at(vars(reorder_name), reorder, input$reorder_levels)
+  
+  datasets[[id_dataset]]$dataset <- dfm
+  
+  assign("list_datasets", datasets, envir = .BitStatEnv)
+  assign("choosed_dataset", id_dataset, envir = .BitStatEnv)
+  
+  updateNumericInput(session, "rnd_dataset_list", value = sample(1:1000000, 1))
+})
+
+
+# 범주 레벨 변경/병합 이벤트 ---------------------------------------------------
+observeEvent(input$reorgVariable, {
+  reorg_name <- input$list_variables
+  
+  datasets <- dslists()
+  
+  reorder <- function(x, reorg_name) {
+    ordered(x, levels = reorg_name)
+  }
+  
+  id_dataset <- input$combo_dataset
+  dfm <- datasets[[id_dataset]]$dataset %>% 
+    mutate_at(vars(input$reorg_variable_name), refactor, 
+              target_levels = input$reorg_levels, 
+              replce_levels = input$new_levels)
   
   datasets[[id_dataset]]$dataset <- dfm
   

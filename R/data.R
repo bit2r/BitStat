@@ -112,3 +112,12 @@ as_date <- function(x) {
     as.Date()
 }
 
+
+#' @export
+refactor <- function (x, target_levels, replce_levels) {
+  x <- x %>% 
+    as.character() %>% 
+    ifelse(!. %in% target_levels, replce_levels, .)
+  
+  factor(x, levels = unique(x))
+}
