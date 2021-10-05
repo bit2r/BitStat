@@ -1891,7 +1891,7 @@ observeEvent(input$reorderVariable, {
     
   id_dataset <- input$combo_dataset
   dfm <- datasets[[id_dataset]]$dataset %>% 
-    mutate_at(vars(reorder_name), reorder, input$reorder_levels)
+    mutate_at(vars(all_of(reorder_name)), reorder, input$reorder_levels)
   
   datasets[[id_dataset]]$dataset <- dfm
   
@@ -1924,6 +1924,7 @@ observeEvent(input$reorgVariable, {
   assign("choosed_dataset", id_dataset, envir = .BitStatEnv)
   
   updateNumericInput(session, "rnd_dataset_list", value = sample(1:1000000, 1))
+  updateTextInput(session, "list_variables", value = input$list_variables)
 })
 
 

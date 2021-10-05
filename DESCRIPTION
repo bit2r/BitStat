@@ -3,7 +3,8 @@ Title: Statistical Analytics using R and Shiny
 Version: 0.5.0.9001
 Date: 2021-09-16
 Authors@R: c(
-  person("Choonghyun", "Ryu",, "choonghyun.ryu@gmail.com", role = c("aut", "cre"))
+  person("Choonghyun", "Ryu",, "choonghyun.ryu@gmail.com", role = c("aut", "cre")),
+  person(given = "bitR", role = c("cph"))
   )
 Description: A collection of tools that support data diagnosis, exploration, and 
     transformation and data analysis. 
@@ -19,11 +20,22 @@ Depends:
     dlookr (>= 0.5.1)
 Imports:
     shiny,
+    shinyjs,
+    shinydashboard,
+    shinydashboardPlus,
+    shinyWidgets,
+    shiny.i18n,
+    shinybusy,
+    htmltools,
+    colourpicker,
+    dplyr,
     lubridate,
-    magrittr
-Suggests:
-    DBI (>= 0.7),
-    RSQLite (>= 2.0)
+    reactable,
+    readr,
+    vroom,
+    glue,
+    xlsx,
+    flextable
 URL: 
     https://github.com/r2bit/BitStat/
 BugReports: https://github.com/r2bit/BitStat/issues
