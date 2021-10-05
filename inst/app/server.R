@@ -41,7 +41,7 @@ shinyServer(function(input, output, session) {
       choosed_dataset <- tab_ds[1]
     }
     
-    selectInput("combo_dataset", i18n$t("데이터셋:"),
+    selectInput("combo_dataset", translate("데이터셋:"),
                 choices = tab_ds,
                 selected = choosed_dataset)
   })

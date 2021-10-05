@@ -19,4 +19,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Choonghyun Ryu \email{choonghyun.ryu@gmail.com}
 
+Other contributors:
+\itemize{
+  \item bitR [copyright holder]
+}
+
 }

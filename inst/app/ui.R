@@ -49,19 +49,19 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
   id = "stats_sidebar",
   sidebarMenu(
-    menuItem(i18n$t("데이터 선택"),
+    menuItem(translate("데이터 선택"),
              shinyjs::hidden(
                numericInput("rnd_dataset_list", label = "", value = 0)
              ),
              uiOutput("combo_dataset"),
              tabName = "choice_data", icon = icon("table")),
-    menuItem(i18n$t("데이터"),   tabName = "manage_data", icon = icon("database")),
-    menuItem(i18n$t("기술통계"), tabName = "desc_data",   icon = icon("calculator")),
-    menuItem(i18n$t("가설검정"), tabName = "hypothesis",  icon = icon("vials")),
-    menuItem(i18n$t("회귀분석"), tabName = "regression",  icon = icon("chart-line")),
-    menuItem(i18n$t("분산분석"), tabName = "anova",       icon = icon("balance-scale-right")),
-    menuItem(i18n$t("보고서"),   tabName = "report",      icon = icon("file-pdf")),
-    menuItem(i18n$t("도움말"),   tabName = "help",        icon = icon("question-circle"))
+    menuItem(translate("데이터"),   tabName = "manage_data", icon = icon("database")),
+    menuItem(translate("기술통계"), tabName = "desc_data",   icon = icon("calculator")),
+    menuItem(translate("가설검정"), tabName = "hypothesis",  icon = icon("vials")),
+    menuItem(translate("회귀분석"), tabName = "regression",  icon = icon("chart-line")),
+    menuItem(translate("분산분석"), tabName = "anova",       icon = icon("balance-scale-right")),
+    menuItem(translate("보고서"),   tabName = "report",      icon = icon("file-pdf")),
+    menuItem(translate("도움말"),   tabName = "help",        icon = icon("question-circle"))
   )
 )
 

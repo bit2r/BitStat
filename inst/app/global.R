@@ -9,10 +9,10 @@
 ##------------------------------------------------------------------------------
 ## 01.01.01. Set the library paths
 ##------------------------------------------------------------------------------
-.libPaths(c("/hli_appl/home/has01/R/x86_64-pc-linux-gnu-library/3.3",
-            "/hli_appl/appl/bda/R/x86_64-pc-linux-gnu-library/3.3",
-            "/opt/microsoft/ropen/3.4.1/lib64/R/library",
-            "/hli_appl/appl/bda/R/oracle"))
+# .libPaths(c("/hli_appl/home/has01/R/x86_64-pc-linux-gnu-library/3.3",
+#             "/hli_appl/appl/bda/R/x86_64-pc-linux-gnu-library/3.3",
+#             "/opt/microsoft/ropen/3.4.1/lib64/R/library",
+#             "/hli_appl/appl/bda/R/oracle"))
 
 ##------------------------------------------------------------------------------
 ## 01.01.02. Load packages that are related shiny & html
@@ -23,9 +23,7 @@ library(shinyWidgets)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(shinybusy)
-# library(shinythemes)
 library(colourpicker)
-library(shiny.i18n)
 library(htmltools)
 
 ##------------------------------------------------------------------------------
@@ -76,39 +74,39 @@ assign("trans", NULL, envir = .BitStatEnv)
 ## 02.03. Translation meta
 ##==============================================================================
 ## set language
-i18n <- Translator$new(translation_csvs_path = "www/meta/translation")
-i18n$set_translation_language(get("language", envir = .BitStatEnv))
+# i18n <- Translator$new(translation_csvs_path = "www/meta/translation")
+# i18n$set_translation_language(get("language", envir = .BitStatEnv))
 
 
 ##==============================================================================
 ## 02.04. Widget meta
 ##==============================================================================
 element_sep <- c(",", ";", "\t")
-names(element_sep) <- c(i18n$t("컴마"), i18n$t("세미콜론"), i18n$t("탭"))
+names(element_sep) <- c(translate("컴마"), translate("세미콜론"), translate("탭"))
 
 element_quote <- c("", '"', "'")
-names(element_quote) <- c(i18n$t("없음"), i18n$t("큰 따옴표"), 
-                          i18n$t("작은 따옴표"))
+names(element_quote) <- c(translate("없음"), translate("큰 따옴표"), 
+                          translate("작은 따옴표"))
 
 element_diag <- list("1", "2", "3")
-names(element_diag) <- c(i18n$t("결측치"), i18n$t("음수값"), i18n$t("0값"))
+names(element_diag) <- c(translate("결측치"), translate("음수값"), translate("0값"))
 
 element_manipulate_variables <- list("Rename", "Change type", "Remove",
                                      "Reorder levels", "Reorganize levels", 
                                      "Transform", "Bin")
-names(element_manipulate_variables) <- c(i18n$t("이름 변경"), 
-                                         i18n$t("형 변환"), 
-                                         i18n$t("변수 삭제"),
-                                         i18n$t("범주 레벨 순서변경"),
-                                         i18n$t("범주 레벨 변경/병합"),
-                                         i18n$t("변수변환"),
-                                         i18n$t("비닝"))
+names(element_manipulate_variables) <- c(translate("이름 변경"), 
+                                         translate("형 변환"), 
+                                         translate("변수 삭제"),
+                                         translate("범주 레벨 순서변경"),
+                                         translate("범주 레벨 변경/병합"),
+                                         translate("변수변환"),
+                                         translate("비닝"))
 
 element_change_type <- list("as_factor", "as_numeric", "as_integer", 
                             "as_character", "as_date")
-names(element_change_type) <- c(i18n$t("범주형으로"), i18n$t("연속형으로"), 
-                                i18n$t("정수형으로"), i18n$t("문자형으로"), 
-                                i18n$t("날짜(Y-M-D)로"))
+names(element_change_type) <- c(translate("범주형으로"), translate("연속형으로"), 
+                                translate("정수형으로"), translate("문자형으로"), 
+                                translate("날짜(Y-M-D)로"))
 
 
 ## load source for tools

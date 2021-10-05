@@ -16,7 +16,7 @@ output$data_file <- renderUI({
     fileInput(
       inputId = "data_file", 
       label = NULL,  
-      buttonLabel = i18n$t("파일선택"),
+      buttonLabel = translate("파일선택"),
       multiple = FALSE,
       accept = c(
         "text/csv",
@@ -28,7 +28,7 @@ output$data_file <- renderUI({
     fileInput(
       inputId = "data_file", 
       label = NULL,  
-      buttonLabel = i18n$t("파일선택"),
+      buttonLabel = translate("파일선택"),
       multiple = FALSE,
       accept = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
@@ -36,7 +36,7 @@ output$data_file <- renderUI({
     fileInput(
       inputId = "data_file", 
       label = NULL,  
-      buttonLabel = i18n$t("파일선택"),
+      buttonLabel = translate("파일선택"),
       multiple = FALSE, 
       accept = c(".rds")
     )
@@ -104,11 +104,11 @@ output$upload_data <- renderUI({
         width = 3,
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px",
-          h4(i18n$t("데이터 파일 선택")),
+          h4(translate("데이터 파일 선택")),
           div(style="display: inline-block;vertical-align:top;",
               radioGroupButtons(
                 inputId = "file_format",
-                label = i18n$t("파일 포맷:"),
+                label = translate("파일 포맷:"),
                 choices = c(`<i class="fas fa-file-csv"></i>` = "csv",
                             `<i class="fas fa-file-excel"></i>` = "xlsx",
                             `<i class="fab fa-r-project"></i>` = "rds"),
@@ -121,16 +121,16 @@ output$upload_data <- renderUI({
             style = "padding-top:0px;",
             condition = "input.file_format == 'csv'",
             # Input: Checkbox if file has header ----
-            strong(i18n$t("헤더 포함 여부:")),
-            checkboxInput("header_csv", i18n$t("헤더 포함"), TRUE),
+            strong(translate("헤더 포함 여부:")),
+            checkboxInput("header_csv", translate("헤더 포함"), TRUE),
             
             # Input: Select separator ----
-            radioButtons("sep", strong(i18n$t("구분자:")),
+            radioButtons("sep", strong(translate("구분자:")),
                          choices = element_sep,
                          selected = ",",
                          inline = TRUE),
             # Input: Select quotes ----
-            radioButtons("quote", strong(i18n$t("인용문자:")),
+            radioButtons("quote", strong(translate("인용문자:")),
                          choices = element_quote,
                          selected = '"',
                          inline = TRUE),
@@ -141,9 +141,9 @@ output$upload_data <- renderUI({
             style = "padding-top:0px;",
             condition = "input.file_format == 'xlsx'",
             # Input: Checkbox if file has header ----
-            strong(i18n$t("헤더 포함 여부:")),
-            checkboxInput("header_xlsx", i18n$t("헤더 포함"), TRUE),
-            numericInput("sheet_index", label = strong(i18n$t("대상 시트번호:")), 
+            strong(translate("헤더 포함 여부:")),
+            checkboxInput("header_xlsx", translate("헤더 포함"), TRUE),
+            numericInput("sheet_index", label = strong(translate("대상 시트번호:")), 
                          value = 1, width = "200px"),
           ),
           
@@ -159,19 +159,19 @@ output$upload_data <- renderUI({
             style = "padding-top:0px;",
             condition = "input.flag_upload == 1",
             div(style="display: inline-block;vertical-align:top; width: 300px;",
-                textInput("name_dataset", label = i18n$t("데이터셋 이름:"), value = "",
-                          placeholder = i18n$t("생성할 데이터셋 이름을 입력하세요."))),
+                textInput("name_dataset", label = translate("데이터셋 이름:"), value = "",
+                          placeholder = translate("생성할 데이터셋 이름을 입력하세요."))),
             div(style="display: inline-block;vertical-align:top; width: 300px;",
-                textInput("desc_dataset", label = i18n$t("데이터셋 설명:"), value = "",
-                          placeholder = i18n$t("생성할 데이터의 설명을 입력하세요."))),
-            actionButton("save_data", label = i18n$t("저장"), icon = icon("save"))
+                textInput("desc_dataset", label = translate("데이터셋 설명:"), value = "",
+                          placeholder = translate("생성할 데이터의 설명을 입력하세요."))),
+            actionButton("save_data", label = translate("저장"), icon = icon("save"))
           )
         )
       ),
       column(9,
              wellPanel(
                style = "padding-top:5px",
-               h4(i18n$t("샘플 데이터 미리보기")),
+               h4(translate("샘플 데이터 미리보기")),
                reactableOutput("file_contents")
              )
       )
@@ -204,7 +204,7 @@ observeEvent(input$save_data, {
   req(input$data_file)
   
   if (is.null(input$data_file)) {
-    alert_message(session, type = "have", name = i18n$t("데이터셋"), coda = TRUE,
+    alert_message(session, type = "have", name = translate("데이터셋"), coda = TRUE,
                   message = "업로드하지 않았습니다.")
     
     return()
@@ -212,13 +212,13 @@ observeEvent(input$save_data, {
   
   
   if (input$name_dataset == "") {
-    alert_message(session, type = "input", name = i18n$t("데이터셋 이름"), coda = TRUE)
+    alert_message(session, type = "input", name = translate("데이터셋 이름"), coda = TRUE)
     
     return()
   }
   
   if (input$desc_dataset == "") {
-    alert_message(session, type = "input", name = i18n$t("데이터셋 설명"), coda = TRUE)
+    alert_message(session, type = "input", name = translate("데이터셋 설명"), coda = TRUE)
     
     return()
   }
@@ -299,7 +299,7 @@ output$manage_dataset <- renderUI({
         width = 12, 
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px",
-          h4(i18n$t("데이터셋 목록")),
+          h4(translate("데이터셋 목록")),
           reactableOutput("imported_ds_list", width = "100%"),
           shinyjs::hidden(
             numericInput("n_datasets_list", label = "", value = 0)
@@ -311,20 +311,20 @@ output$manage_dataset <- renderUI({
             fluidRow(
               column(
                 width = 4,
-                actionButton("dropDatasetButton", i18n$t("데이터셋 삭제"),
+                actionButton("dropDatasetButton", translate("데이터셋 삭제"),
                              icon = icon("eraser"),
                              style = "background-color: #90CAF9; border: none;"),
-                actionButton("editDatasetButton", i18n$t("데이터셋 편집"),
+                actionButton("editDatasetButton", translate("데이터셋 편집"),
                              icon = icon("edit"),
                              style = "background-color: #90CAF9; border: none;"),
-                actionButton("downDatasetButton", i18n$t("데이터셋 받기"),
+                actionButton("downDatasetButton", translate("데이터셋 받기"),
                              icon = icon("file-download"),
                              style = "background-color: #90CAF9; border: none;")
               ),
               column(
                 width = 1,
                 prettySwitch(inputId = "openDatasetDownload",
-                             label = i18n$t("전체 다운로드"),
+                             label = translate("전체 다운로드"),
                              status = "success", fill = TRUE),
                 style = "margin-top: 8px;"
               )
@@ -341,18 +341,18 @@ output$manage_dataset <- renderUI({
             fluidRow(
               column(
                 width = 3,
-                textInput("name_dataset_edit", label = i18n$t("데이터셋 이름:"),
+                textInput("name_dataset_edit", label = translate("데이터셋 이름:"),
                           value = "")
               ),
               column(
                 width = 9,
-                textInput("desc_dataset_edit", label = i18n$t("데이터셋 설명:"),
+                textInput("desc_dataset_edit", label = translate("데이터셋 설명:"),
                           value = "")
               )
             ),
-            actionButton("modifyDatasetButton", i18n$t("수정"), icon = icon("save"),
+            actionButton("modifyDatasetButton", translate("수정"), icon = icon("save"),
                          style = "background-color: #90CAF9; border: none;"),
-            actionButton("cancelDatasetButton", i18n$t("취소"), 
+            actionButton("cancelDatasetButton", translate("취소"), 
                          icon = icon("window-close"),
                          style = "background-color: #90CAF9; border: none;")
           ),
@@ -371,7 +371,7 @@ output$manage_dataset <- renderUI({
                   style = "display: inline-block;vertical-align:top;",
                   radioGroupButtons(
                     inputId = "file_format_down",
-                    label = i18n$t("파일 포맷:"),
+                    label = translate("파일 포맷:"),
                     choices = c(`<i class="fas fa-file-csv"></i>` = "csv",
                                 `<i class="fas fa-file-excel"></i>` = "xlsx",
                                 `<i class="fab fa-r-project"></i>` = "rds"),
@@ -380,10 +380,10 @@ output$manage_dataset <- renderUI({
                   )
                 ),
                 
-                textInput("fname_d_file", i18n$t("파일 이름:"), value = ""),
-                downloadButton("downFileData", i18n$t("파일 받기"),
+                textInput("fname_d_file", translate("파일 이름:"), value = ""),
+                downloadButton("downFileData", translate("파일 받기"),
                                style = "background-color: #90CAF9;border: none;"),
-                actionButton("cancelFileButton", i18n$t("취소"), 
+                actionButton("cancelFileButton", translate("취소"), 
                              icon = icon("window-close"),
                              style = "background-color: #90CAF9; border: none;")
               )
@@ -400,8 +400,8 @@ output$manage_dataset <- renderUI({
             fluidRow(
               column(
                 width = 3,
-                textInput("fname_d_dataset", i18n$t("파일 이름:"), value = ""),
-                downloadButton("downDatasetData", i18n$t("파일 받기"),
+                textInput("fname_d_dataset", translate("파일 이름:"), value = ""),
+                downloadButton("downDatasetData", translate("파일 받기"),
                                style = "background-color: #90CAF9;border: none;")
               )
             )
@@ -636,14 +636,14 @@ output$overview_diagnose <- renderUI({
         width = 12,
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px",
-          h4(i18n$t("데이터 진단 개요")),
+          h4(translate("데이터 진단 개요")),
           
           div(style="width: 300px;padding-top:5px;padding-bottom:10px",
-              strong(i18n$t("데이터 진단 집계:")),
+              strong(translate("데이터 진단 집계:")),
               reactableOutput("list_warnings", width = "100%")
           ),
           div(style="width: 800px;padding-top:5px;padding-bottom:10px",
-              strong(i18n$t("데이터 진단 상세:")),
+              strong(translate("데이터 진단 상세:")),
               reactableOutput("detail_warnings", width = "100%")
           )
         )
@@ -681,7 +681,7 @@ output$variable_diagnose <- renderUI({
         width = 12,
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px",
-          h4(i18n$t("변수별 데이터 진단")),
+          h4(translate("변수별 데이터 진단")),
           div(style = "padding-top:5px;padding-bottom:10px",
               reactableOutput("variable_warnings", width = "100%")
           )
@@ -720,7 +720,7 @@ output$variable_outlier <- renderUI({
         width = 12,
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px",
-          h4(i18n$t("변수별 이상치 진단")),
+          h4(translate("변수별 이상치 진단")),
           div(style="padding-top:5px;padding-bottom:10px",
               reactableOutput("variable_outliers", width = "100%")
           )
@@ -754,20 +754,20 @@ output$pdf_diagnose <- renderUI({
         width = 4,
         wellPanel(
           style = "padding-top:5px;padding-bottom:75px !important;",
-          h4(i18n$t("보고서 커버 설정")),
+          h4(translate("보고서 커버 설정")),
           style = "padding-top:0px;",
           div(style="display: inline-block;vertical-align:top; width: 100%;",
-              textInput("title_diag", label = i18n$t("보고서 제목:"),
-                        value = i18n$t("데이터 진단 보고서"))),
+              textInput("title_diag", label = translate("보고서 제목:"),
+                        value = translate("데이터 진단 보고서"))),
           div(style="display: inline-block;vertical-align:top; width: 100%;",
-              textInput("subtitle_diag", label = i18n$t("보고서 부제목:"),
+              textInput("subtitle_diag", label = translate("보고서 부제목:"),
                         value = dataset_name)),
           div(style="display: inline-block;vertical-align:top; width: 50%",
-              colourInput("title_col_diag", i18n$t("보고서 제목 색상:"), "white",
+              colourInput("title_col_diag", translate("보고서 제목 색상:"), "white",
                           returnName = TRUE, palette = "limited",
                           closeOnClick = TRUE)),
           div(style="display: inline-block;vertical-align:top; width: 50%;",
-              colourInput("subtitle_col_diag", i18n$t("보고서 부제목 색상:"),
+              colourInput("subtitle_col_diag", translate("보고서 부제목 색상:"),
                           "sandybrown", returnName = TRUE, palette = "limited",
                           closeOnClick = TRUE))
         )
@@ -777,13 +777,13 @@ output$pdf_diagnose <- renderUI({
         width = 4,
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px !important;",
-          h4(i18n$t("보고서 파라미터 설정")),
+          h4(translate("보고서 파라미터 설정")),
           style = "padding-top:0px;",
           div(
             style="display: inline-block;vertical-align:top; width: 100%;",
             sliderInput(
               inputId = "thres_uniq_cat",
-              label = i18n$t("범주형 변수의 유일값 비율 상한 임계치 (0 ~ 1]:"),
+              label = translate("범주형 변수의 유일값 비율 상한 임계치 (0 ~ 1]:"),
               min = 0, max = 1, value = 0.5
             )
           ),
@@ -791,7 +791,7 @@ output$pdf_diagnose <- renderUI({
             style="display: inline-block;vertical-align:top; width: 100%;",
             sliderInput(
               inputId = "thres_uniq_num",
-              label = i18n$t("수치형 변수의 유일값 개수 하한 임계치 (0 ~ 10]:"),
+              label = translate("수치형 변수의 유일값 개수 하한 임계치 (0 ~ 10]:"),
               min = 0, max = 10, value = 5
             )
           ),
@@ -799,7 +799,7 @@ output$pdf_diagnose <- renderUI({
             style="display: inline-block;vertical-align:top; width: 100%;",
             checkboxGroupInput(
               inputId = "flag_diag",
-              label = i18n$t("부가 진단 항목:"), inline = TRUE,
+              label = translate("부가 진단 항목:"), inline = TRUE,
               choices = element_diag,
               selected = c(1, 2, 3)
             )
@@ -808,7 +808,7 @@ output$pdf_diagnose <- renderUI({
             style="display: inline-block;vertical-align:top; width: 100%;",
             sliderInput(
               inputId = "sample_percent_diag",
-              label = i18n$t("보고서 작성에 사용할 데이터 백분율 (5 ~ 100%]:"),
+              label = translate("보고서 작성에 사용할 데이터 백분율 (5 ~ 100%]:"),
               min = 5, max = 100, value = 100
             )
           )
@@ -818,13 +818,13 @@ output$pdf_diagnose <- renderUI({
         width = 4,
         wellPanel(
           style = "padding-top:5px;padding-bottom:35px !important;",
-          h4(i18n$t("보고서 출력 설정")),
+          h4(translate("보고서 출력 설정")),
           style = "padding-top:0px;",
           div(
             style = "display: inline-block;vertical-align:top; width: 100%;",
             selectInput(
               inputId = "format_diag", 
-              label = i18n$t("출력 포맷:"),
+              label = translate("출력 포맷:"),
               choices = c("pdf", "html"),
               selected = "pdf"
             )
@@ -833,7 +833,7 @@ output$pdf_diagnose <- renderUI({
             style = "display: inline-block;vertical-align:top; width: 100%;",
             selectInput(
               inputId = "theme_color_diag", 
-              label = i18n$t("색상 테마:"),
+              label = translate("색상 테마:"),
               choices = c("blue", "orange"),
               selected = "blue"
             )
@@ -842,19 +842,19 @@ output$pdf_diagnose <- renderUI({
             style = "display: inline-block;vertical-align:top; width: 100%;",
             textInput(
               inputId = "author_diag", 
-              label = i18n$t("보고서 작성자:"),
+              label = translate("보고서 작성자:"),
               value = "dlookr")),
           div(
             style = "display: inline-block;vertical-align:top; width: 100%;",
             textInput(
               inputId = "file_diag", 
-              label = i18n$t("파일 이름:"), 
+              label = translate("파일 이름:"), 
               value = paste0("diag_", dataset_name)
             )
           ),
           actionButton(
             inputId = "printDiagnose", 
-            label = i18n$t("보고서 출력"), 
+            label = translate("보고서 출력"), 
             icon = icon("print"),
             style = "background-color: #90CAF9; border: none;"
           )
@@ -1027,7 +1027,7 @@ output$list_variables <- renderUI({
   
   updateNumericInput(session, "rnd_trans_list", value = 0)
   
-  selectInput("list_variables", i18n$t("변수 목록:"),
+  selectInput("list_variables", translate("변수 목록:"),
               choices = list_var,
               selected = list_var[1],
               width = "250")
@@ -1056,7 +1056,7 @@ output$list_change_type <- renderUI({
   
   selectInput(
     inputId = "list_change_type", 
-    label = i18n$t("변경 데이터 형:"),
+    label = translate("변경 데이터 형:"),
     choices = element_change_type,
     selected = element_change_type[1],
     width = "250"
@@ -1082,12 +1082,12 @@ output$panel_reorder_levels <- renderUI({
 
   validate(
     need(is.factor(target_variable), 
-         i18n$t("범주 레벨 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
+         translate("범주 레벨 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
   )
   
   validate(
     need(length(list_levels) < 31, 
-         i18n$t("범주 레벨 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다."))
+         translate("범주 레벨 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다."))
   )
   
   fluidRow(
@@ -1095,7 +1095,7 @@ output$panel_reorder_levels <- renderUI({
       width = 12,
       selectizeInput(
         inputId = "reorder_levels",
-        label = i18n$t("범주 레벨 순서변경:"),
+        label = translate("범주 레벨 순서변경:"),
         choices = list_levels,
         selected = list_levels,
         multiple = TRUE,
@@ -1103,7 +1103,7 @@ output$panel_reorder_levels <- renderUI({
       ),
       actionButton(
         inputId = "reorderVariable",
-        label = i18n$t("범주 레벨 순서변경"),
+        label = translate("범주 레벨 순서변경"),
         icon = icon("sort-alpha-down"),
         style = "background-color: #90CAF9; border: none;"
       )
@@ -1132,12 +1132,12 @@ output$panel_reorg_levels <- renderUI({
   
   validate(
     need(is.factor(target_variable), 
-         i18n$t("범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
+         translate("범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요."))
   )
   
   validate(
     need(length(list_levels) < 31, 
-         i18n$t("범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다."))
+         translate("범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다."))
   )
   
   fluidRow(
@@ -1145,7 +1145,7 @@ output$panel_reorg_levels <- renderUI({
       width = 12,
       selectizeInput(
         inputId = "reorg_levels",
-        label = i18n$t("변경/병합 대상 레벨:"),
+        label = translate("변경/병합 대상 레벨:"),
         choices = list_levels,
         selected = list_levels,
         multiple = TRUE,
@@ -1164,7 +1164,7 @@ output$panel_reorg_levels <- renderUI({
       ),      
       actionButton(
         inputId = "reorgVariable",
-        label = i18n$t("범주 레벨 변경/병합"),
+        label = translate("범주 레벨 변경/병합"),
         icon = icon("tags"),
         style = "background-color: #90CAF9; border: none;"
       )
@@ -1185,7 +1185,7 @@ output$panel_transform <- renderUI({
   
   validate(
     need(input$list_variables %in% numerical_variable, 
-         i18n$t("변수변환은 정수와 실수만 지원합니다."))
+         translate("변수변환은 정수와 실수만 지원합니다."))
   )
   
   fluidRow(
@@ -1193,7 +1193,7 @@ output$panel_transform <- renderUI({
       width = 12,
       selectizeInput(
         inputId = "trans_method", 
-        label = i18n$t("적용 함수:"),
+        label = translate("적용 함수:"),
         choices = c(
           "zscore", "minmax", "log", "log+1", "sqrt", "1/x", "x^2", "x^3"
         ),
@@ -1201,7 +1201,7 @@ output$panel_transform <- renderUI({
       ),
       numericInput(
         inputId = "trans_digit", 
-        label = i18n$t("소수점 자리수:"), 
+        label = translate("소수점 자리수:"), 
         min = 0,
         max = 7,
         value = 2,
@@ -1212,7 +1212,7 @@ output$panel_transform <- renderUI({
       ),
       actionButton(
         inputId = "transformVariable",
-        label = i18n$t("변수변환"),
+        label = translate("변수변환"),
         icon = icon("square-root-alt"),
         style = "background-color: #90CAF9; border: none;"
       )
@@ -1233,7 +1233,7 @@ output$densityOut <- renderPlot({
   
   validate(
     need(input$list_variables %in% numerical_variable, 
-         i18n$t("변수변환은 정수와 실수만 지원합니다."))
+         translate("변수변환은 정수와 실수만 지원합니다."))
   )
   
   target_variable <- dslists()[[id_dataset]]$dataset %>% 
@@ -1273,7 +1273,7 @@ output$panel_bin <- renderUI({
   
   validate(
     need(input$list_variables %in% numerical_variable, 
-         i18n$t("비닝은 정수와 실수만 지원합니다."))
+         translate("비닝은 정수와 실수만 지원합니다."))
   )
   
   fluidRow(
@@ -1281,7 +1281,7 @@ output$panel_bin <- renderUI({
       width = 12,
       selectizeInput(
         inputId = "cut_method",
-        label = i18n$t("비닝 방법:"),
+        label = translate("비닝 방법:"),
         choices = c("Manual" = "fixed", "Standard deviation" = "sd",
                     "Equal width" = "equal", "Pretty" = "pretty",
                     "Quantile" = "quantile", "K-means" = "kmeans"),
@@ -1289,36 +1289,36 @@ output$panel_bin <- renderUI({
         width = "250"
       ),
       uiOutput("no_breaks"),
-      textInput("breaks", i18n$t("비닝 컷 포인트:"), width = "250"),
+      textInput("breaks", translate("비닝 컷 포인트:"), width = "250"),
       checkboxInput(
         inputId = "right",
-        label = i18n$t("오른쪽 폐구간 여부 (right)"),
-        FALSE
+        label = translate("오른쪽 폐구간 여부 (right)"),
+        value = FALSE
       ),
       checkboxInput(
         inputId = "inclowest",
-        label = i18n$t("극단값 포함 여부 (include.lowest)"),
-        FALSE
+        label = translate("말단값 포함 여부 (include.lowest)"),
+        value = TRUE
       ),
       checkboxInput(
         inputId = "addext",
-        label = i18n$t("가능할 경우의 극단값 추가 여부"),
-        FALSE
+        label = translate("가능할 경우의 극단값 추가 여부"),
+        value = FALSE
       ),
       numericInput(
         inputId = "diglab",
-        label = i18n$t("소수점 라벨 표현 자리수 (dig.lab):"),
+        label = translate("소수점 라벨 표현 자리수 (dig.lab):"),
         min = 0, max = 10, value = 4,
         width = "250"
       ),
       textInput(
         inputId = "bin_variable",
-        label = i18n$t("생성 변수 접미어:"),
+        label = translate("생성 변수 접미어:"),
         value = "_bin", width = "250"
       ),      
       actionButton(
         inputId = "binVariable",
-        label = i18n$t("비닝"),
+        label = translate("비닝"),
         icon = icon("cut"),
         style = "background-color: #90CAF9; border: none;"
       )
@@ -1338,7 +1338,7 @@ output$bin_distribution <- renderUI({
 
   validate(
     need(input$list_variables %in% numerical_variable,
-         i18n$t("비닝은 정수와 실수만 지원합니다."))
+         translate("비닝은 정수와 실수만 지원합니다."))
   )
   
   suppressWarnings(
@@ -1348,16 +1348,16 @@ output$bin_distribution <- renderUI({
                quantiles = c(0, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 1)) %>% 
       select(p00, p05, p10, p25, mean, p50, p75, p90, p95, p100) %>% 
       mutate_all(round, 2) %>% 
-      rename(!!i18n$t("최솟값")   := p00,
-             !!i18n$t("5%분위")   := p05,
-             !!i18n$t("10%분위")  := p10,             
-             !!i18n$t("1/4분위")  := p25,
-             !!i18n$t("중위수")   := p50,
-             !!i18n$t("산술평균") := mean,
-             !!i18n$t("3/4분위")  := p75,
-             !!i18n$t("90%분위")  := p90,
-             !!i18n$t("95%분위")  := p95,
-             !!i18n$t("최댓값")   := p100) %>% 
+      rename(!!translate("최솟값")   := p00,
+             !!translate("5%분위")   := p05,
+             !!translate("10%분위")  := p10,             
+             !!translate("1/4분위")  := p25,
+             !!translate("중위수")   := p50,
+             !!translate("산술평균") := mean,
+             !!translate("3/4분위")  := p75,
+             !!translate("90%분위")  := p90,
+             !!translate("95%분위")  := p95,
+             !!translate("최댓값")   := p100) %>% 
       flextable() %>% 
       htmltools_value()
   )
@@ -1402,7 +1402,7 @@ get_breaks <- function(b, compute = FALSE) {
 output$no_breaks <- renderUI({
   numericInput(
     inputId = "no_breaks", 
-    label = i18n$t("범주 레벨 갯수:"), 
+    label = translate("범주 레벨 갯수:"), 
     value = 6, 
     min = 2, 
     step = 1,
@@ -1472,7 +1472,7 @@ output$histOut <- renderPlot({
 
   validate(
     need(input$list_variables %in% numerical_variable,
-         i18n$t("비닝은 정수와 실수만 지원합니다."))
+         translate("비닝은 정수와 실수만 지원합니다."))
   )
 
   if (!input$list_variables %in% numerical_variable) return()
@@ -1495,7 +1495,7 @@ output$histOut <- renderPlot({
 # 비닝 리스트 ------------------------------------------------------------------ 
 bins_list <- reactive({
   req(input$list_variables)
-  req(input$no_breaks)  
+  req(input$no_breaks)
   
   id_dataset <- input$combo_dataset
 
@@ -1542,11 +1542,11 @@ output$tab_bins <- renderReactable({
     reactable(
       columns = list(
         Bins = colDef(
-          name = i18n$t("범주 레벨"),
+          name = translate("범주 레벨"),
           na = "<NA>"
         ),
         Frequency = colDef(
-          name = i18n$t("돗수"),
+          name = translate("돗수"),
           format = colFormat(
             separators = TRUE
           )
@@ -1573,7 +1573,7 @@ output$panel_bin_out <- renderUI({
   
   validate(
     need(input$list_variables %in% numerical_variable, 
-         i18n$t("비닝은 정수와 실수만 지원합니다."))
+         translate("비닝은 정수와 실수만 지원합니다."))
   )
   
   tagList(
@@ -1583,26 +1583,26 @@ output$panel_bin_out <- renderUI({
         column(
           width = 12, 
           style = "padding-top:0px;padding-bottom:10px;",
-          h4(i18n$t("비닝 미리보기")),
-          h5(strong(i18n$t("데이터 분포:"))),      
+          h4(translate("비닝 미리보기")),
+          h5(strong(translate("데이터 분포:"))),      
           uiOutput("bin_distribution")
         ),  
         column(
           width = 6, 
-          h5(strong(i18n$t("데이터 분포 시각화:"))),   
+          h5(strong(translate("데이터 분포 시각화:"))),   
           plotOutput("histOut")
         ),  
         column(
           width = 6, 
-          h5(strong(i18n$t("돗수 분포 시각화:"))),
+          h5(strong(translate("돗수 분포 시각화:"))),
           plotOutput("barOut")
         )
       )
     ),
     
     wellPanel(
-      h4(i18n$t("비닝 정의")),
-      h5(strong(i18n$t("돗수 분포 테이블:"))),  
+      h4(translate("비닝 정의")),
+      h5(strong(translate("돗수 분포 테이블:"))),  
       reactableOutput("tab_bins", width = "100%")
     ) 
   )
@@ -1621,12 +1621,12 @@ output$manipulate_variables <- renderUI({
         width = 3,
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px",
-          h4(i18n$t("변수 조작 수행")),
+          h4(translate("변수 조작 수행")),
           div(
             style = "display: inline-block;vertical-align:top;",
             selectInput(
               inputId = "manipulation_method",
-              label = i18n$t("조작 방법:"),
+              label = translate("조작 방법:"),
               choices = element_manipulate_variables,
               width = "250"
             )
@@ -1641,12 +1641,12 @@ output$manipulate_variables <- renderUI({
                 width = 10,
                 textInput(
                   inputId = "rename_variable",
-                  label = i18n$t("수정 변수 이름:"),
+                  label = translate("수정 변수 이름:"),
                   value = "", width = "250"
                 ),
                 actionButton(
                   inputId = "renameVariable",
-                  label = i18n$t("변수이름 변경"),
+                  label = translate("변수이름 변경"),
                   icon = icon("signature"),
                   style = "background-color: #90CAF9; border: none;"
                 )
@@ -1663,13 +1663,13 @@ output$manipulate_variables <- renderUI({
                 uiOutput('list_change_type'),
                 textInput(
                   inputId = "ext_change_type",
-                  label = i18n$t("변환 변수 접미어:"),
+                  label = translate("변환 변수 접미어:"),
                   value = "", width = "250",
-                  placeholder = i18n$t("새로 만들 변수의 접미어 입력")
+                  placeholder = translate("새로 만들 변수의 접미어 입력")
                 ),
                 actionButton(
                   inputId = "changeType",
-                  label = i18n$t("변수 형 변환"),
+                  label = translate("변수 형 변환"),
                   icon = icon("reply"),
                   style = "background-color: #90CAF9; border: none;"
                 )
@@ -1685,7 +1685,7 @@ output$manipulate_variables <- renderUI({
                 width = 10,
                 actionButton(
                   inputId = "removeVariable",
-                  label = i18n$t("변수 삭제"),
+                  label = translate("변수 삭제"),
                   icon = icon("trash-alt"),
                   style = "background-color: #90CAF9; border: none;"
                 )
@@ -1726,7 +1726,7 @@ output$manipulate_variables <- renderUI({
         width = 9,
         wellPanel(
           style = "padding-top:5px",
-          h4(i18n$t("샘플 데이터 미리보기")),
+          h4(translate("샘플 데이터 미리보기")),
           reactableOutput("data_contents"),
           conditionalPanel(
             style = "padding-top:0px;",
@@ -1734,12 +1734,12 @@ output$manipulate_variables <- renderUI({
             fluidRow(
               style = "padding-top:10px",
               column(
-                h4(i18n$t("형 변환 전 데이터 요약")),
+                h4(translate("형 변환 전 데이터 요약")),
                 width = 6,
                 verbatimTextOutput("summary_before")
               ),
               column(
-                h4(i18n$t("형 변환 후 데이터 요약")),
+                h4(translate("형 변환 후 데이터 요약")),
                 width = 6,
                 verbatimTextOutput("summary_after")
               )
@@ -1752,7 +1752,7 @@ output$manipulate_variables <- renderUI({
             fluidRow(
               style = "padding-top:10px",
               column(
-                h4(i18n$t("데이터 분포 비교")),
+                h4(translate("데이터 분포 비교")),
                 width = 12,
                 plotOutput("densityOut")
               )  
@@ -1974,15 +1974,15 @@ output$ui_manage_data <- renderUI({
     tabBox(
       width = 12,
       tabPanel(
-        title = i18n$t("데이터 준비"),
+        title = translate("데이터 준비"),
         tabsetPanel(
           tabPanel(
-            title = i18n$t("데이터 업로드"), 
+            title = translate("데이터 업로드"), 
             uiOutput("upload_data"),
             icon = shiny::icon("upload")
           ),
           tabPanel(
-            title = i18n$t("데이터셋 관리"), 
+            title = translate("데이터셋 관리"), 
             uiOutput("manage_dataset"),
             icon = shiny::icon("archive")
           )
@@ -1990,25 +1990,25 @@ output$ui_manage_data <- renderUI({
       ),
       
       tabPanel(
-        title = i18n$t("데이터 진단"),
+        title = translate("데이터 진단"),
         tabsetPanel(
           tabPanel(
-            title = i18n$t("진단 개요"), 
+            title = translate("진단 개요"), 
             uiOutput("overview_diagnose"),
             icon = shiny::icon("stethoscope")
           ),
           tabPanel(
-            title = i18n$t("변수별 진단"), 
+            title = translate("변수별 진단"), 
             uiOutput("variable_diagnose"),
             icon = shiny::icon("list-ul")
           ),
           tabPanel(
-            title = i18n$t("이상치"), 
+            title = translate("이상치"), 
             uiOutput("variable_outlier"),
             icon = shiny::icon("balance-scale-left")
           ),
           tabPanel(
-            title = i18n$t("보고서 작성"), 
+            title = translate("보고서 작성"), 
             uiOutput("pdf_diagnose"),
             icon = shiny::icon("file-pdf")
           )
@@ -2016,19 +2016,19 @@ output$ui_manage_data <- renderUI({
       ),
       
       tabPanel(
-        title = i18n$t("데이터 변환"),
+        title = translate("데이터 변환"),
         tabsetPanel(
           tabPanel(
-            title = i18n$t("변수 조작"), 
+            title = translate("변수 조작"), 
             uiOutput("manipulate_variables"),
             icon = shiny::icon("exchange-alt")
           ),
           tabPanel(
-            title = i18n$t("데이터 정제"),
+            title = translate("데이터 정제"),
             icon = shiny::icon("broom")
           ),
           tabPanel(
-            title = i18n$t("데이터 분할"),
+            title = translate("데이터 분할"),
             icon = shiny::icon("cut")
           )
         )

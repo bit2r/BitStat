@@ -14,6 +14,8 @@
 #'
 #' @export
 launch <- function(language = c("kr", "en")[1], ...) {
+  options(encoding = "UTF-8")
+  
   assign("language", language, envir = .BitStatEnv)
   
   suppressMessages(
