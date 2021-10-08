@@ -14,17 +14,17 @@ alert_message <- function(session, type = c("choice", "input", "be"),
     if (is.null(message))
       message <- "없습니다."
     
-    title <- i18n$t("정합성 오류")
+    title <- translate("정합성 오류")
     postfix <- ifelse(TRUE, "이", "가")
     text <- glue::glue("{name}{postfix} {message}")
   } else {
     postfix <- ifelse(TRUE, "을", "를")
     
     if (type %in% "input") {
-      title <- i18n$t("미입력 오류")
+      title <- translate("미입력 오류")
       text <- glue::glue("{name}{postfix} 입력하지 않았습니다.")
     } else {
-      title <- i18n$t("미선택 오류")
+      title <- translate("미선택 오류")
       text <- glue::glue("{name}{postfix} 선택하지 않았습니다.")
     }
   }
@@ -54,19 +54,19 @@ tab_data_list <- function(.data) {
         sortable = FALSE,
         columns = list(
           dataset_id = colDef(
-            name = i18n$t("데이터셋 아이디")
+            name = translate("데이터셋 아이디")
           ),
           dataset_name = colDef(
-            name = i18n$t("데이터셋 이름")
+            name = translate("데이터셋 이름")
           ),
           dataset_desc = colDef(
-            name = i18n$t("데이터셋 설명")
+            name = translate("데이터셋 설명")
           ),
           n_observation = colDef(
-            name = i18n$t("관측치 개수")
+            name = translate("관측치 개수")
           ),
           n_column = colDef(
-            name = i18n$t("변수 개수")
+            name = translate("변수 개수")
           )
         )
       )
@@ -96,20 +96,20 @@ tab_data_list <- function(.data) {
       onClick = "select",
       columns = list(
         dataset_id = colDef(
-          name = i18n$t("데이터셋 아이디")
+          name = translate("데이터셋 아이디")
         ),
         dataset_name = colDef(
-          name = i18n$t("데이터셋 이름")
+          name = translate("데이터셋 이름")
         ),
         dataset_desc = colDef(
-          name = i18n$t("데이터셋 설명")
+          name = translate("데이터셋 설명")
         ),
         n_observation = colDef(
-          name = i18n$t("관측치 개수"),
+          name = translate("관측치 개수"),
           format = colFormat(separators = TRUE)
         ),
         n_column = colDef(
-          name = i18n$t("변수 개수")
+          name = translate("변수 개수")
         )
       ),
       details = function(index) {
@@ -125,23 +125,23 @@ tab_data_list <- function(.data) {
             sortable = FALSE,
             columns = list(
               variable = colDef(
-                name = i18n$t("변수 이름")
+                name = translate("변수 이름")
               ),
               class = colDef(
-                name = i18n$t("데이터 타입")
+                name = translate("데이터 타입")
               )
             )
           )
         
         shiny::tabsetPanel(
           shiny::tabPanel(
-            title = i18n$t("변수 정보"), 
+            title = translate("변수 정보"), 
             data_type,
             hr(style = "border-top: 1px solid black;"),
             style = "padding-top:5px; padding-bottom:25px;"
           ),
           shiny::tabPanel(
-            title = i18n$t("샘플 데이터"), 
+            title = translate("샘플 데이터"), 
             tab_sample,
             hr(style = "border-top: 1px solid black;"),
             style = "padding-top:5px; padding-bottom:25px;"

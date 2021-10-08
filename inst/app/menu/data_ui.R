@@ -1415,7 +1415,7 @@ output$no_breaks <- renderUI({
 # Breaks -----------------------------------------------------------------------
 ## referenced by icut.R of questionr package 
 observe(
-  if (req(input$cut_method) != "fixed") {
+  if (req(input$cut_method) != "fixed" & input$manipulation_method == "Bin") {
     id_dataset <- input$combo_dataset
     
     numerical_variable <- dslists()[[id_dataset]]$dataset %>% 
