@@ -102,7 +102,8 @@ body <- dashboardBody(
       tabName = "report"
     ),
     tabItem(
-      tabName = "help"
+      tabName = "help",
+      uiOutput("ui_help")      
     )
   )
 )
