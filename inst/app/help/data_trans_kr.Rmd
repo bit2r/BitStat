@@ -1,0 +1,48 @@
+---
+title: "데이터 변환"
+output: 
+  html_document:
+    css: theme.css
+---
+
+```{r setup, echo=FALSE, cache=FALSE}
+library(shiny)
+library(htmltools)
+```
+
+
+
+```{r, preface, echo=FALSE}
+div(class = "preface", 
+    h4("들어가기"),
+    "개요 설명", br(),
+    "개요 요약 설명 ")
+```
+
+<br>
+
+# 데이터 변환 기능
+기능에 대한 개괄 요약
+
+## 변수 조작
+
+### 이름 변경
+
+### 형 변환
+
+### 범주 삭제
+
+### 범주 레벨 순서변경
+
+### 범주 레벨 변경/병합
+
+### 변수변환
+
+### 비닝
+
+## 데이터 정제
+
+
+## 데이터 분할
+
+

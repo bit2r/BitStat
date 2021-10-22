@@ -1,0 +1,48 @@
+---
+title: "데이터 진단"
+output: 
+  html_document:
+    css: theme.css
+---
+
+```{r setup, echo=FALSE, cache=FALSE}
+library(shiny)
+library(htmltools)
+```
+
+
+
+```{r, preface, echo=FALSE}
+div(class = "preface", 
+    h4("들어가기"),
+    "개요 설명", br(),
+    "개요 요약 설명 ")
+```
+
+<br>
+
+# 데이터 진단 기능
+기능에 대한 개괄 요약
+
+
+## 진단 개요
+
+
+## 변수별 진단
+
+### 변수별 진단 리스트
+
+### 개별 변수 상세 진단
+
+## 이상치
+
+### 이상치 리스트
+
+### 개별 이상치 분포
+
+## 보고서 작성
+
+### 정적 보고서 작성
+
+### 동적 보고서 작성
+

@@ -1,0 +1,48 @@
+---
+title: "Diagnose Data"
+output: 
+  html_document:
+    css: theme.css
+---
+
+```{r setup, echo=FALSE, cache=FALSE}
+library(shiny)
+library(htmltools)
+```
+
+
+
+```{r, preface, echo=FALSE}
+div(class = "preface", 
+    h4("Preface"),
+    "개요 설명", br(),
+    "개요 요약 설명 ")
+```
+
+<br>
+
+# Overview
+기능에 대한 개괄 요약
+
+
+## Oerview Diagnosis
+
+
+## Diagnose variables
+
+### Disgnosis lists
+
+### Individual Disgnosis
+
+## Overview outliers
+
+### Outlier lists
+
+### Individual outliers
+
+## Create report
+
+### Static report
+
+### Dynamic report
+
