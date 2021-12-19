@@ -10,8 +10,6 @@ library(shiny)
 library(htmltools)
 ```
 
-
-
 ```{r, preface, echo=FALSE}
 div(class = "preface", 
     h4("들어가기"),
@@ -24,9 +22,7 @@ div(class = "preface",
 # 데이터 진단 기능
 기능에 대한 개괄 요약
 
-
 ## 진단 개요
-
 
 ## 변수별 진단
 
