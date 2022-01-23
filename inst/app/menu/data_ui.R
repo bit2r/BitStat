@@ -974,14 +974,21 @@ observeEvent(input$printDiagnose, {
         sample_percent = sample_percent,
         theme = theme,
         author = author,
-        output_dir = "./",
+        # output_dir = "./",
         output_file = output_file,
         base_family = "NanumSquare"
       )
     
-    browseURL(paste(".", output_file, sep = "/"))
+    # browseURL(paste(".", output_file, sep = "/"))
   }
   
+  # Change for server side excute
+  file.copy(paste(tempdir(), output_file, sep = "/"),
+            paste("www", output_file, sep = "/"),
+            overwrite = TRUE)
+  URL <- paste(".", output_file, sep = "/")  
+  
+  js$browseURL(URL)
 })
 
 

@@ -9,6 +9,11 @@ js <- "Shiny.addCustomMessageHandler('change_skin', function(skin) {
         document.body.className = skin;
        });"
 
+# Change for server side excute
+# define js function for opening urls in new tab/window
+js_code <- "shinyjs.browseURL = function(url) {
+              window.open(url,'_blank');
+           }"
 
 ################################################################################
 ## 02. Header content of the dashboard
@@ -81,6 +86,10 @@ body <- dashboardBody(
     width  = "60px"
   ),
 
+  # Change for server side excute
+  useShinyjs(),
+  extendShinyjs(text = js_code, functions = 'browseURL'),
+  
   tabItems(
     tabItem(
       tabName = "manage_data",
