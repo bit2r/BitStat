@@ -1,7 +1,7 @@
 Package: BitStat
 Title: Statistical Analytics using R and Shiny
 Version: 0.5.0.9001
-Date: 2021-09-16
+Date: 2022-04-27
 Authors@R: c(
   person("Choonghyun", "Ryu",, "choonghyun.ryu@gmail.com", role = c("aut", "cre")),
   person(given = "bitR", role = c("cph"))
@@ -34,7 +34,7 @@ Imports:
     readr (>= 2.0.0),
     vroom,
     glue,
-    xlsx,
+    openxlsx,
     flextable
 URL: 
     https://github.com/r2bit/BitStat/

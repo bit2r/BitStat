@@ -72,10 +72,13 @@ output$file_contents <- renderReactable({
       stop(safeError(e))
     })
   } else if (input$file_format == "xlsx") {
-    df <- xlsx::read.xlsx(
-      input$data_file$datapath, endRow = 10,
-      sheetIndex = input$sheet_index,
-      header = input$header_xlsx
+    df <- openxlsx::read.xlsx(
+      input$data_file$datapath, 
+      sheet = input$sheet_index,
+      rows = 1:10,
+      colNames = input$header_xlsx,
+      skipEmptyRows = TRUE,
+      detectDates = TRUE   
     )
   } else if (input$file_format == "rds") {
     df <- readr::read_rds(input$data_file$datapath)
@@ -241,10 +244,12 @@ observeEvent(input$save_data, {
     ) %>%
       tibble::as_tibble()
   } else if (input$file_format %in% "xlsx") {
-    dataset <- xlsx::read.xlsx(
+    dataset <- openxlsx::read.xlsx(
       input$data_file$datapath,
-      sheetIndex = input$sheet_index,
-      header = input$header_xlsx
+      sheet = input$sheet_index,
+      colNames = input$header_xlsx,
+      skipEmptyRows = TRUE,
+      detectDates = TRUE    
     )
   } else if (input$file_format %in% "rds") {
     dataset <- get("import_rds", envir = .BitStatEnv)
@@ -539,7 +544,7 @@ output$downFileData <- downloadHandler(
     if (input$file_format_down %in% "csv") {
       readr::write_csv(obs, file)
     } else if (input$file_format_down %in% "xlsx") {
-      xlsx::write.xlsx(obs, file)
+      openxlsx::write.xlsx(obs, file)
     } else if (input$file_format_down %in% "rds") {
       readr::write_rds(obs, file, "xz", compression = 9L)
     }

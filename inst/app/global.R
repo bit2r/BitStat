@@ -35,7 +35,7 @@ library(vroom)
 library(reactable)
 library(glue)
 library(dlookr)
-library(xlsx)
+library(openxlsx)
 library(flextable)
 
 ##==============================================================================
