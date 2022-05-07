@@ -1,0 +1,102 @@
+---
+title: "&nbsp;"
+output: 
+  html_document:
+    number_sections: false
+    toc: false    
+    css: theme.css
+---
+
+```{r prepare, echo=FALSE, message=FALSE, warning=FALSE}
+library(flextable)
+library(dplyr)
+library(dlookr)
+
+id_dataset <- "$id_dataset$"
+method <- "$method$"
+digits <- $digits$
+group_flag <- $group_flag$
+group_variable <- "$group_variable$"
+plot_flag <- $plot_flag$  
+```
+
+```{r title-matrix, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+htmltools::h3(
+  BitStat::translate("상관행렬")
+)
+```
+
+```{r content-matrix, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+.data <- get("list_datasets", envir = .BitStatEnv) %>% 
+  "[["(id_dataset) %>% 
+  "[["("dataset")
+  
+if (!group_flag) {
+  corr <- .data %>% 
+    dlookr::correlate(method = method) 
+  
+  corr %>% 
+    tidyr::spread(var1, coef_corr, fill = 1) %>% 
+    rename("variables" = var2) %>% 
+    flextable::flextable() %>%
+    flextable::colformat_double(digits = digits) %>% 
+    flextable::set_caption(caption = glue::glue("Correlation Matrix ({method})")) %>% 
+    flextable::theme_booktabs() %>% 
+    flextable::flextable_to_rmd()
+} else {
+  group_variable <- group_variable %>% 
+  strsplit(",") %>% 
+  unlist()
+  
+  corr <- .data %>% 
+    group_by(across(all_of(group_variable))) %>% 
+    dlookr::correlate(method = method) 
+  
+  mat_group <- corr %>% 
+    tidyr::spread(var1, coef_corr, fill = 1) %>% 
+    rename("variables" = var2) 
+  
+  cases <- mat_group %>% 
+    select(all_of(group_variable)) %>% 
+    unique()
+  
+  cases %>% 
+    NROW() %>% 
+    seq() %>% 
+    purrr::walk(
+      function(x) {
+        condition <- cases[x, ] %>% unlist() 
+        labs <- paste(names(condition), condition, sep = "=", collapse = ", ")
+          
+        cases[x, ] %>% 
+          inner_join(
+            mat_group,
+            by = cases %>% names()
+          ) %>% 
+          select(-all_of(group_variable)) %>%
+          flextable::flextable() %>%
+          flextable::colformat_double(digits = digits) %>% 
+          flextable::set_caption(caption = glue::glue("Correlation Matrix ({labs} : {method})")) %>% 
+          flextable::theme_booktabs() %>% 
+          flextable::flextable_to_rmd()
+        }
+    )
+}
+
+
+```
+
+```{r title-plot, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+if (plot_flag) {
+  htmltools::h3(
+    BitStat::translate("상관행렬 플롯")
+  )
+}
+```
+
+```{r content-plot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%'}
+if (plot_flag) {
+  plot(corr, base_family = 'NanumSquare')
+}
+```
+

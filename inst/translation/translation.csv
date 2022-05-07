@@ -36,35 +36,15 @@ kr,en
 파일선택,Browse...
 샘플 데이터 미리보기,Preview samples
 데이터셋 이름:,Dataset name:
-생성할 데이터셋 이름을 입력하세요.,Name of the dataset you want to create
-데이터셋 설명:,Dataset description:
-생성할 데이터의 설명을 입력하세요.,Description of the dataset you want to create
-저장,Save
-데이터셋 목록,Dataset list
-데이터셋 아이디,Dataset ID
-데이터셋 이름,Dataset name
-데이터셋 설명,Dataset description
-관측치 개수,Number of observations
-변수 개수,Number of variables
-변수 이름,Variable name
-데이터 타입,Data type
-변수 정보,Variables
-샘플 데이터,Sample data
-데이터셋 삭제,Delete
-데이터셋 편집,Edit
-데이터셋 받기,Download
-수정,Modify
-취소,Cancel
-파일 포맷 선택:,File format:
+생성할 데이터셋 이름을 입력하세요.,Name of the dataset you want to create 데이터셋 설명:,Dataset description:
+생성할 데이터의 설명을 입력하세요.,Description of the dataset you want to create 저장,Save 데이터셋 목록,Dataset list 데이터셋 아이디,Dataset ID 데이터셋 이름,Dataset name 데이터셋 설명,Dataset description 관측치 개수,Number of observations 변수 개수,Number of variables 변수 이름,Variable name 데이터 타입,Data type 변수 정보,Variables 샘플 데이터,Sample data 데이터셋 삭제,Delete 데이터셋 편집,Edit 데이터셋 받기,Download 수정,Modify 취소,Cancel 파일 포맷 선택:,File format:
 파일 이름:,File name:
 파일 받기,Download
 전체 다운로드,Downloas all
 데이터 진단 개요,Overview of data diagnosis
 데이터 진단 집계:,Summary diagnosis
 데이터 진단 상세:,List of diagnosis
-변수별 데이터 진단,List of diagnosis by variables
-Distribution,Distribution
-Cardinality/Missing,Cardinality/Missing
+변수별 데이터 진단,List of diagnosis by variables Distribution,Distribution Cardinality/Missing,Cardinality/Missing
 Statistics,Statistics
 변수별 이상치 진단,List of outlers
 보고서 커버 설정,Report cover
@@ -100,8 +80,7 @@ Statistics,Statistics
 범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorganize levels only support factors. If you want, cast it to factor first."
 범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-organizng is only supported up to 30 levels.
 대체 레벨 이름:,Replacement level name:
-대체할 라벨 이름을 입력하세요,Provide name for re-orgnaze levels
-변수 이름:,Variable name:
+대체할 라벨 이름을 입력하세요,Provide name for re-orgnaze levels 변수 이름:,Variable name:
 범주 레벨 변경/병합,Reorganize levels
 변수변환,Transform
 수정 변수 이름:,Variable name for change:
@@ -113,11 +92,7 @@ Statistics,Statistics
 문자형으로,AS character
 날짜(Y-M-D)로,AS date (Y-m-d)
 변환 변수 접미어:,Variable name extension:
-새로 만들 변수의 접미어 입력,Add extension to variable name
-변수 형 변환,Change type
-변수삭제,Remove variable
-형 변환 전 데이터 요약,Summary before change type
-형 변환 후 데이터 요약,Summary after change type
+새로 만들 변수의 접미어 입력,Add extension to variable name 변수 형 변환,Change type 변수삭제,Remove variable 형 변환 전 데이터 요약,Summary before change type 형 변환 후 데이터 요약,Summary after change type
 적용 함수:	Apply function:
 소수점 자리수:,Digits:
 데이터 분포 비교,Compare distributions
@@ -125,10 +100,7 @@ Statistics,Statistics
 비닝 방법:,Binning method:
 범주 레벨 갯수:,Number of bins:
 비닝 컷 포인트:,Breaks:
-오른쪽 폐구간 여부 (right),Right-closed intervals (right)
-말단값 포함 여부 (include.lowest),Include extreme (include.lowest)
-가능할 경우의 극단값 추가 여부,Append extreme values if necessary
-소수점 라벨 표현 자리수 (dig.lab):,Label digits (dig.lab):
+오른쪽 폐구간 여부 (right),Right-closed intervals (right) 말단값 포함 여부 (include.lowest),Include extreme (include.lowest) 가능할 경우의 극단값 추가 여부,Append extreme values if necessary 소수점 라벨 표현 자리수 (dig.lab):,Label digits (dig.lab):
 생성 변수 접미어:,Variable name extension:
 비닝,Bin
 비닝 미리보기,Preview Bins
@@ -151,6 +123,40 @@ Statistics,Statistics
 돗수,Frequency
 상대돗수 (백분율),Frequency (%)
 비닝은 정수와 실수만 지원합니다.,Bin only support numeric and integer.
+상관관계,Correlation
+상관검정,Correlation Test
+상관행렬,Correlation Matrix
+상관행렬 플롯,Correlation Matrix Plot
+상관행렬 설정,Setup Correlation Matrix
+상관행렬은 정수와 실수만 지원합니다.,Correlation matrix only support numeric and integer.
+상관계수 종류:,Correlation Coefficient method:
+범주별 계산,Calculate by category
+범주형 변수 목록:,Categorical variabes:
+시각화 여부,Plot chart
+상관계수 소수점 자리수:,Coefficient digits:
+상관검정 설정,Setup Correlation Tests
+대립가설:,Alternative hypothesis:
+수치형 변수 목록(두개 선택):, Numerical Variables(Choose two variables):
+피어슨의 적률 상관계수,Pearson’s r statistic
+켄달의 순위 상관계수,Kendall's tau statistic
+스피어만의 순위 상관계수,Spearman's rho statistic
+상관계수 ≠ 0,Correlation Coefficient ≠ 0
+상관계수 < 0,Correlation Coefficient < 0
+상관계수 > 0,Correlation Coefficient > 0
+통계량,Statistic
+대립가설,Alternative hypothesis
+퍼센트 신뢰구간,percent confidence interval
+표본 추정치,Sample estimates
+실제 상관계수 #1는 0이 아닙니다,true #1 is not equal to 0
+실제 상관계수 #1는 0보다 작습니다,true #1 is less than 0
+실제 상관계수 #1는 0보다 큽니다,true #1 is greater than 0
+수치변수는 2개를 선택해야 합니다.,You must select two numeric variables.
+상관관계 플롯,Correlation Plot
+두 변수의 상관관계,Visualize the relationship between two variables
+관측치의 수가 충분하지 않습니다,not enough finite observations
+범주별 검정을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.,Test by category is checked, but Categorical Variables is not selected. Uncheck or select a variable.
+데이터 필터링 조건:,Data filtering condition:
+실행,Excute
 미입력 오류,No input error
 미선택 오류,Unselected error
 정합성 오류,Consistency error

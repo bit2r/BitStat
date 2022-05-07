@@ -1,0 +1,178 @@
+---
+title: "&nbsp;"
+output: 
+  html_document:
+    number_sections: false
+    toc: false    
+    css: theme.css
+---
+
+```{r prepare, echo=FALSE, message=FALSE, warning=FALSE}
+library(flextable)
+library(dplyr)
+library(dlookr)
+library(ggplot2)
+
+id_dataset <- "$id_dataset$"
+method <- "$method$"
+alternative <- "$alternative$"
+variables <- "$variables$"
+group_flag <- $group_flag$
+group_variable <- "$group_variable$"
+plot_flag <- $plot_flag$  
+```
+
+```{r title-matrix, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+htmltools::h3(
+  BitStat::translate("상관검정")
+)
+```
+
+```{r content-matrix, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+.data <- get("list_datasets", envir = .BitStatEnv) %>% 
+  "[["(id_dataset) %>% 
+  "[["("dataset")
+  
+formula <- variables %>% 
+  stringr::str_replace_all("^|$", "`") %>% 
+  stringr::str_replace(",", "`,`") %>% 
+  strsplit(",") %>% 
+  unlist() %>% 
+  paste(sep = "`", collapse = " + ") %>% 
+  paste("~", .)
+  
+if (!group_flag) {
+  cor.test(formula = as.formula(formula), data = .data, method = method, 
+           alternative = alternative) %>% 
+    asis_cor_test()
+} else {
+  cases <- group_variable %>% 
+  strsplit(",") %>% 
+  unlist() %>% 
+    purrr::map(
+      function(x) {
+        levels(.data[[x]])
+      }
+    ) %>% 
+    expand.grid()
+    
+  group_variable <- group_variable %>% 
+  strsplit(",") %>% 
+  unlist()
+    
+  names(cases) <- group_variable
+  
+  cases %>% 
+    NROW() %>% 
+    seq() %>% 
+    purrr::walk(
+      function(x) {
+        condition <- cases[x, , drop=FALSE] %>% unlist()
+        labs <- paste(names(condition), condition, sep = "=", collapse = ", ")
+          
+        data_sub <- cases[x, , drop=FALSE] %>% 
+          inner_join(
+            .data %>% 
+              mutate_at(vars(all_of(group_variable)), as.character),
+            by = cases %>% names()
+          ) 
+        
+        htmltools::h4(labs) %>% 
+          as.character() %>% 
+          cat()
+        
+        tryCatch(
+          cor.test(formula = as.formula(formula), data = data_sub, method = method, 
+                   alternative = alternative) %>% 
+            asis_cor_test(),
+          error = function(e) {
+            message <- BitStat::translate(e$message, msg_language = "en")
+            htmltools::h5(message, style = "color:#FF5733;") %>% 
+              as.character() %>% 
+              cat()
+          },
+          finally = NULL
+        )
+        
+        htmltools::br() %>% 
+          as.character() %>% 
+          cat()
+      }
+    )
+}
+```
+
+```{r title-plot, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+if (plot_flag) {
+  htmltools::h3(
+    BitStat::translate("상관관계 플롯")
+  )
+}
+```
+
+```{r content-plot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%', results='asis'}
+if (plot_flag) {
+  variables <- variables %>% 
+    stringr::str_replace_all("^|$", "`") %>% 
+    stringr::str_replace(",", "`,`") %>% 
+    strsplit(",") %>% 
+    unlist()
+
+  if (!group_flag) {
+    .data %>% 
+      ggplot(aes_string(x = variables[1], y = variables[2])) +
+      geom_point() +
+      geom_smooth(formula = "y ~ x", method = "lm", se = FALSE) +
+      labs(title = translate("두 변수의 상관관계")) +
+      hrbrthemes::theme_ipsum(base_family = "NanumSquare")
+  } else {
+    cases <- group_variable %>% 
+    strsplit(",") %>% 
+    unlist() %>% 
+      purrr::map(
+        function(x) {
+          levels(.data[[x]])
+        }
+      ) %>% 
+      expand.grid()
+      
+    group_variable <- group_variable %>% 
+    strsplit(",") %>% 
+    unlist()
+      
+    names(cases) <- group_variable
+  
+    cases %>% 
+      NROW() %>% 
+      seq() %>% 
+      purrr::walk(
+        function(x) {
+          condition <- cases[x, , drop=FALSE] %>% unlist()
+          labs <- paste(names(condition), condition, sep = "=", collapse = ", ")
+            
+          data_sub <- cases[x, , drop=FALSE] %>% 
+            inner_join(
+              .data %>% 
+                mutate_at(vars(all_of(group_variable)), as.character),
+              by = cases %>% names()
+            ) 
+          
+          htmltools::h4(labs) %>% 
+            as.character() %>% 
+            cat()
+          
+          p <- data_sub %>% 
+            ggplot(aes_string(x = variables[1], y = variables[2])) +
+            geom_point() +
+            geom_smooth(formula = "y ~ x", method = "lm", se = FALSE) +
+            labs(title = translate("두 변수의 상관관계"),
+                 subtitle = glue::glue("{translate('데이터 필터링 조건:')} {labs}")) +
+            hrbrthemes::theme_ipsum(base_family = "NanumSquare")
+          
+          print(p)
+        }
+      )
+  }
+}  
+```
+

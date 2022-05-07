@@ -29,9 +29,11 @@ Imports:
     htmltools,
     colourpicker,
     dplyr,
+    stringr,
     lubridate,
     reactable,
     readr (>= 2.0.0),
+    rlang,
     vroom,
     glue,
     openxlsx,
@@ -43,4 +45,4 @@ License: AGPL-3 | file LICENSE
 LazyData: true
 Encoding: UTF-8
 Language: en-US
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

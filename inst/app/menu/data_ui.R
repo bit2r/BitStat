@@ -61,8 +61,8 @@ output$file_contents <- renderReactable({
     tryCatch({
       df <- vroom(
         input$data_file$datapath,
+        delim = input$sep,        
         col_names = input$header_csv,
-        delim = input$sep,
         quote = input$quote,
         n_max = 10,
         locale = locale(encoding = encode)
@@ -78,7 +78,7 @@ output$file_contents <- renderReactable({
       rows = 1:10,
       colNames = input$header_xlsx,
       skipEmptyRows = TRUE,
-      detectDates = TRUE   
+      detectDates = TRUE      
     )
   } else if (input$file_format == "rds") {
     df <- readr::read_rds(input$data_file$datapath)
@@ -237,8 +237,8 @@ observeEvent(input$save_data, {
     
     dataset <- vroom(
       input$data_file$datapath,
-      col_names = input$header_csv,
       delim = input$sep,
+      col_names = input$header_csv,
       quote = input$quote,
       locale = locale(encoding = encode)
     ) %>%
@@ -249,7 +249,7 @@ observeEvent(input$save_data, {
       sheet = input$sheet_index,
       colNames = input$header_xlsx,
       skipEmptyRows = TRUE,
-      detectDates = TRUE    
+      detectDates = TRUE      
     )
   } else if (input$file_format %in% "rds") {
     dataset <- get("import_rds", envir = .BitStatEnv)

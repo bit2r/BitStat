@@ -96,7 +96,8 @@ body <- dashboardBody(
       uiOutput("ui_manage_data")
     ),
     tabItem(
-      tabName = "desc_data"
+      tabName = "desc_data",
+      uiOutput("ui_desc_data")      
     ),
     tabItem(
       tabName = "hypothesis"

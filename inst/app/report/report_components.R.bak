@@ -1,0 +1,959 @@
+################################################################################
+## 01. 사용자 정의 함수 - R Markdown 삽입을 위한 코드 생성
+################################################################################
+##==============================================================================
+## 01.01. 상관행렬
+##==============================================================================
+create_mat_corr <- function(.data, method = c("pearson", "kendall", "spearman"),
+                            digits = 3, group = NULL, plot = TRUE) {
+  method <- match.arg(method)
+  
+  obj_corr <- .data %>% 
+    dlookr::correlate(method = method) 
+  
+  tabs <- obj_corr %>% 
+    tidyr::spread(var1, coef_corr, fill = 1) %>% 
+    rename("variables" = var2) %>% 
+    flextable::flextable() %>%
+    flextable::colformat_double(digits = digits) %>% 
+    flextable::set_caption(caption = glue::glue("Correlation Matrix ({method})")) %>% 
+    flextable::theme_booktabs()
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(tabs, obj_corr, file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### 상관행렬
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+load(file = 'raw_", id, ".rda')
+
+tabs
+
+```
+", collapse = "", sep = "")
+
+  if (plot) {
+    chunk <- paste(chunk,
+                   
+"
+### 상관행렬 플롯
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='70%'}
+library(dplyr)
+library(ggplot2)
+
+load(file = 'raw_", id, ".rda')
+
+p <- obj_corr %>% 
+  plot(base_family = 'NanumSquare') 
+```
+", collapse = "", sep = "")
+  }
+  
+  list(
+    chunk = chunk,
+    rda_name = glue::glue("{getwd()}/www/report/raw_{id}.rda")
+  )
+}
+
+
+get_table_summary <- function(.data, varname) {
+  master <- M_CODES %>% 
+    filter(code_nm %in% varname)
+  
+  if(is.na(master$colum_id[1])) {
+    colum_id <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname) %>% 
+      select(colum_id) %>% 
+      pull()
+  } else {
+    colum_id <- master$colum_id[1]
+  }
+  
+  if(is.na(master$colum_id[1])) {
+    tabs <- .data %>% 
+      group_by_at(all_of(colum_id)) %>% 
+      tally() %>% 
+      mutate_at(vars(colum_id), function(x) if_else(is.na(x), "결측치", x)) %>%  
+      mutate_at(vars(colum_id), factor, labels = c("Y", "N", "결측치")) %>% 
+      rename(!!varname := colum_id) %>% 
+      rename("고객수" = n)
+    
+    tag_tab <- tabs %>% 
+      mutate(`백분율(%)` = round(고객수 / sum(고객수) * 100, 2)) %>% 
+      knitr::kable(format = "html",
+                   format.args = list(big.mark = ",")) %>% 
+      kableExtra::kable_styling()
+    
+    tabs <- tabs %>% 
+      mutate_at(vars(varname), function(x) reorder(x, desc(x)))
+    
+  } else {
+    tabs <- .data %>% 
+      group_by_at(all_of(colum_id)) %>% 
+      tally() %>% 
+      rename("VAR" = colum_id) %>% 
+      left_join(master, by = c("VAR" = "code")) %>% 
+      select(decode, n) %>% 
+      mutate(decode = as.factor(decode) %>% 
+               forcats::fct_reorder(n)) %>% 
+      rename(!!varname := decode) %>% 
+      rename("고객수" = n)
+    
+    tag_tab <- tabs %>% 
+      mutate(`백분율(%)` = round(고객수 / sum(고객수) * 100, 2)) %>% 
+      arrange(desc(고객수)) %>% 
+      knitr::kable(format = "html",
+                   format.args = list(big.mark = ",")) %>% 
+      kableExtra::kable_styling()
+  }
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(tabs, tag_tab, file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### ", varname, " 분포 현황
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=2.5, fig.height=2, multi.col=TRUE, out.width='100%'}
+library(dplyr)
+library(ggplot2)
+
+load(file = 'raw_", id, ".rda')
+
+tag_tab
+
+p <- tabs %>% 
+  ggplot(aes(x = ", varname , ", y = 고객수, fill = ", varname, ")) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  theme_minimal(base_family = 'NanumSquare') +
+  labs(x = NULL, title = '", varname, "고객수 분포') +
+  theme(legend.position = 'none')
+  
+p
+       
+```
+", collapse = "", sep = "")
+  
+  chunk
+}
+
+
+##==============================================================================
+## 01.02. 집계표 - 2차원 집계표 & 플롯
+##==============================================================================
+get_multitab_summary <- function(.data, varname1, varname2) {
+  master1 <- M_CODES %>% 
+    filter(code_nm %in% c(varname1))
+  
+  master2 <- M_CODES %>% 
+    filter(code_nm %in% c(varname2))
+  
+  if(NROW(master1) == 0) {
+    colname1 <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname1) %>% 
+      select(colum_id) %>% 
+      pull()
+  } else {
+    colname1 <- master1$colum_id[1]
+  }
+  
+  if(NROW(master2) == 0) {
+    colname2 <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname2) %>% 
+      select(colum_id) %>% 
+      pull()
+  } else {
+    colname2 <- master2$colum_id[1]
+  }
+  
+  tabs <- .data %>% 
+    group_by_at(all_of(c(colname1, colname2))) %>% 
+    tally() %>% 
+    ungroup() 
+  
+  if (NROW(master1) == 0) {
+    colum_id <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname1) %>% 
+      select(colum_id) %>% 
+      pull()
+    
+    tabs <- tabs %>% 
+      mutate_at(vars(colum_id), 
+                function(x) if_else(is.na(x), "결측치", x) 
+                %>% factor()) %>%  
+      mutate_at(vars(colum_id), 
+                function(x) forcats::fct_expand(x, c("Y", "N", "결측치"))) %>% 
+      rename(!!varname1 := colum_id)
+  } else {
+    tabs <- tabs %>% 
+      left_join(
+        master1 %>% 
+          filter(code_nm %in% varname1) %>% 
+          rename(!!colname1 := code)
+      ) %>% 
+      rename(!!varname1 := decode) %>% 
+      select(-colum_id, -code_nm)
+  }
+  
+  if (NROW(master2) == 0) {
+    colum_id <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname2) %>% 
+      select(colum_id) %>% 
+      pull()
+    
+    tabs <- tabs %>% 
+      mutate_at(vars(colum_id), 
+                function(x) if_else(is.na(x), "결측치", x) 
+                %>% factor()) %>%  
+      mutate_at(vars(colum_id), 
+                function(x) forcats::fct_expand(x, c("Y", "N", "결측치"))) %>% 
+      rename(!!varname2 := colum_id)
+  } else {
+    tabs <- tabs %>% 
+      left_join(
+        master2 %>% 
+          filter(code_nm %in% varname2) %>% 
+          rename(!!colname2 := code)
+      ) %>% 
+      rename(!!varname2 := decode) %>% 
+      select(-colum_id, -code_nm)
+  } 
+  
+  tabs <- tabs %>% 
+    select(all_of(c(varname1, varname2)), n) %>% 
+    rename("고객수" = n)
+  
+  
+  tag_tab <- tabs %>% 
+    mutate(`백분율(%)` = round(고객수 / sum(고객수) * 100, 2)) %>% 
+    arrange(desc(고객수)) %>%
+    knitr::kable(format = "html",
+                 format.args = list(big.mark = ",")) %>% 
+    kableExtra::kable_styling()
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(tabs, file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### ", varname1, " vs ", varname2, " 분포 현황
+
+
+:::: {style='display: grid; grid-template-columns: 48% 48%; grid-column-gap: 4%;'}
+
+::: {}
+    
+",
+    
+    tag_tab,
+    
+    "
+
+:::
+  
+::: {}
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5, fig.height=4}
+library(dplyr)
+library(ggplot2)
+
+load(file = 'raw_", id, ".rda')
+
+p <- tabs %>% 
+  ggplot(aes(x = ", varname2 , ", y = 고객수, fill = ", varname1, ")) +
+  geom_bar(position = 'stack', stat = 'identity') +
+  theme_minimal(base_family = 'NanumSquare') +
+  labs(title = '", varname1, " vs ", varname2, " 고객수 분포') +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+       
+plotly::ggplotly(p) %>% 
+  plotly::config(displayModeBar = FALSE)
+```
+:::
+  
+::::
+
+", collapse = "", sep = "")
+  
+  chunk
+}
+
+
+get_multitab_summary <- function(.data, varname1, varname2) {
+  master1 <- M_CODES %>% 
+    filter(code_nm %in% c(varname1))
+  
+  master2 <- M_CODES %>% 
+    filter(code_nm %in% c(varname2))
+  
+  if(NROW(master1) == 0) {
+    colname1 <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname1) %>% 
+      select(colum_id) %>% 
+      pull()
+  } else {
+    colname1 <- master1$colum_id[1]
+  }
+  
+  if(NROW(master2) == 0) {
+    colname2 <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname2) %>% 
+      select(colum_id) %>% 
+      pull()
+  } else {
+    colname2 <- master2$colum_id[1]
+  }
+  
+  tabs <- .data %>% 
+    group_by_at(all_of(c(colname1, colname2))) %>% 
+    tally() %>% 
+    ungroup() 
+  
+  if (NROW(master1) == 0) {
+    colum_id <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname1) %>% 
+      select(colum_id) %>% 
+      pull()
+    
+    tabs <- tabs %>% 
+      mutate_at(vars(colum_id), 
+                function(x) if_else(is.na(x), "결측치", x) 
+                %>% factor()) %>%  
+      mutate_at(vars(colum_id), 
+                function(x) forcats::fct_expand(x, c("Y", "N", "결측치"))) %>% 
+      rename(!!varname1 := colum_id)
+  } else {
+    tabs <- tabs %>% 
+      left_join(
+        master1 %>% 
+          filter(code_nm %in% varname1) %>% 
+          rename(!!colname1 := code)
+      ) %>% 
+      rename(!!varname1 := decode) %>% 
+      select(-colum_id, -code_nm)
+  }
+  
+  if (NROW(master2) == 0) {
+    colum_id <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname2) %>% 
+      select(colum_id) %>% 
+      pull()
+    
+    tabs <- tabs %>% 
+      mutate_at(vars(colum_id), 
+                function(x) if_else(is.na(x), "결측치", x) 
+                %>% factor()) %>%  
+      mutate_at(vars(colum_id), 
+                function(x) forcats::fct_expand(x, c("Y", "N", "결측치"))) %>% 
+      rename(!!varname2 := colum_id)
+  } else {
+    tabs <- tabs %>% 
+      left_join(
+        master2 %>% 
+          filter(code_nm %in% varname2) %>% 
+          rename(!!colname2 := code)
+      ) %>% 
+      rename(!!varname2 := decode) %>% 
+      select(-colum_id, -code_nm)
+  } 
+  
+  tabs <- tabs %>% 
+    select(all_of(c(varname1, varname2)), n) %>% 
+    rename("고객수" = n)
+  
+  
+  tag_tab <- tabs %>% 
+    mutate(`백분율(%)` = round(고객수 / sum(고객수) * 100, 2)) %>% 
+    arrange(desc(고객수)) %>%
+    knitr::kable(format = "html",
+                 format.args = list(big.mark = ",")) %>% 
+    kableExtra::kable_styling()
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(tabs, tag_tab, file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### ", varname1, " vs ", varname2, " 분포 현황
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=2.5, fig.height=2, multi.col=TRUE, out.width='100%'}
+library(dplyr)
+library(ggplot2)
+
+load(file = 'raw_", id, ".rda')
+
+tag_tab
+
+p <- tabs %>% 
+  ggplot(aes(x = ", varname2 , ", y = 고객수, fill = ", varname1, ")) +
+  geom_bar(position = 'stack', stat = 'identity') +
+  theme_minimal(base_family = 'NanumSquare') +
+  labs(title = '", varname1, " vs ", varname2, " 고객수 분포') +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+       
+p
+```
+", collapse = "", sep = "")
+  
+  chunk
+}
+
+
+##==============================================================================
+## 01.03. 집계표 - 2차원 분할표 & 플롯
+##==============================================================================
+get_contingency_summary <- function(.data, varname1, varname2) {
+  plot_compare_category <- function (x, xvar, yvar, na.rm = FALSE, 
+                                     base_family = NULL, ...) 
+  {
+    las <- 0
+    
+    data <- x[[1]] %>% 
+      select(a = !(!sym(xvar)), b = !(!sym(yvar)), n)
+    
+    if (na.rm) {
+      data <- data %>% filter(!is.na(a) & !is.na(b))
+    }
+    
+    first <- data[1, 1] %>% pull %>% as.character
+    
+    y <- data %>% filter(a %in% first) %>% select(b, n)
+    y_lab <- y$b %>% rev() %>% as.character()
+    y <- y$n %>% rev()
+    y_cumsum <- cumsum(y)
+    y_center <- y/2
+    y_pos <- numeric(length(y))
+    
+    for (j in seq(y)) {
+      if (j == 1) {
+        y_pos[j] <- y_center[j]
+      }
+      else {
+        y_pos[j] <- y_cumsum[j - 1] + y_center[j]
+      }
+      y_pos[j] <- y_pos[j]/sum(y)
+    }
+    
+    y_pos <- complete.cases(y_pos) %>% y_pos[.]
+    
+    suppressWarnings({
+      p <- data %>% group_by(a) %>% mutate(x_width = sum(n)) %>% 
+        ggplot(aes(x = factor(a), y = n)) + 
+        geom_col(aes(width = x_width, fill = factor(b)), 
+                 color = "white", size = 2, 
+                 position = position_fill(reverse = FALSE)) + 
+        facet_grid(~a, space = "free", scales = "free", 
+                   switch = "x") + scale_x_discrete(name = xvar) + 
+        scale_y_continuous(name = yvar, breaks = y_pos, labels = y_lab) + 
+        labs(title = sprintf("Mosaics plot by '%s' vs '%s'", xvar, yvar)) + 
+        theme_grey(base_family = base_family) + 
+        theme(legend.position = "none", 
+              axis.text.x = element_blank(), 
+              axis.ticks.x = element_blank(), 
+              strip.background = element_blank(), 
+              panel.spacing = unit(0, "pt"))
+    })
+    p <- p + dlookr:::theme_typographic(base_family) + 
+      scale_fill_ipsum(na.value = "grey80") + 
+      theme(legend.position = "none", 
+            panel.grid.major.x = element_blank(), 
+            axis.text.x = element_blank(), 
+            axis.text.y = element_text(size = 12), 
+            axis.title.x = element_text(size = 12), 
+            axis.title.y = element_text(size = 12), 
+            panel.spacing = unit(0, "pt"))
+    
+    if (las == 0) {
+      p <- p + theme(axis.text.y = element_text(angle = 90, hjust = 0.5))
+    }
+    
+    p
+  }
+  
+  master1 <- M_CODES %>% 
+    filter(code_nm %in% c(varname1))
+  
+  master2 <- M_CODES %>% 
+    filter(code_nm %in% c(varname2))
+  
+  if(NROW(master1) == 0) {
+    colname1 <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname1) %>% 
+      select(colum_id) %>% 
+      pull()
+  } else {
+    colname1 <- master1$colum_id[1]
+  }
+  
+  if(NROW(master2) == 0) {
+    colname2 <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname2) %>% 
+      select(colum_id) %>% 
+      pull()
+  } else {
+    colname2 <- master2$colum_id[1]
+  }
+  
+  cont_tab <- .data %>% 
+    select(all_of(colname1), all_of(colname2))
+  
+  
+  if (NROW(master1) == 0) {
+    colum_id <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname1) %>% 
+      select(colum_id) %>% 
+      pull()
+    
+    cont_tab <- cont_tab %>% 
+      mutate_at(vars(colum_id), 
+                function(x) if_else(is.na(x), "결측치", x) 
+                %>% factor()) %>%  
+      mutate_at(vars(colum_id), 
+                function(x) forcats::fct_expand(x, c("Y", "N", "결측치"))) %>% 
+      rename(!!varname1 := colum_id)
+  } else {
+    cont_tab <- cont_tab %>% 
+      left_join(
+        master1 %>% 
+          filter(code_nm %in% varname1) %>% 
+          rename(!!colname1 := code)
+      ) %>% 
+      rename(!!varname1 := decode) %>% 
+      select(-colum_id, -code_nm)
+  }
+  
+  if (NROW(master2) == 0) {
+    colum_id <- M_CUST_MAIN %>% 
+      bind_rows(M_CUST_PLCY) %>% 
+      bind_rows(M_CUST_HELLO) %>%   
+      filter(colum_nm %in% varname2) %>% 
+      select(colum_id) %>% 
+      pull()
+    
+    cont_tab <- cont_tab %>% 
+      mutate_at(vars(colum_id), 
+                function(x) if_else(is.na(x), "결측치", x) 
+                %>% factor()) %>%  
+      mutate_at(vars(colum_id), 
+                function(x) forcats::fct_expand(x, c("Y", "N", "결측치"))) %>% 
+      rename(!!varname2 := colum_id)
+  } else {
+    cont_tab <- cont_tab %>% 
+      left_join(
+        master2 %>% 
+          filter(code_nm %in% varname2) %>% 
+          rename(!!colname2 := code)
+      ) %>% 
+      rename(!!varname2 := decode) %>% 
+      select(-colum_id, -code_nm)
+  } 
+  
+  cont_tab <- cont_tab %>% 
+    select(all_of(c(varname1, varname2))) %>% 
+    mutate_all(as.factor) %>% 
+    dlookr::compare_category()
+  
+  
+  tag_tab <- cont_tab[[1]] %>% 
+    select(1:3) %>% 
+    tidyr::spread(2, 3) 
+  
+  
+  tag_tab <- tag_tab %>% 
+    knitr::kable(format = "html",
+                 format.args = list(big.mark = ",")) %>% 
+    kableExtra::kable_styling() 
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(cont_tab, plot_compare_category,
+       file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### ", varname1, " vs ", varname2, " 분포 현황 (분할표)
+
+",
+    
+    tag_tab,
+    
+    "
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5, fig.height=4, out.width='100%'}
+library(dplyr)
+library(ggplot2)
+
+load(file = 'raw_", id, ".rda')
+  
+plot_compare_category(cont_tab, '", varname1, "', '", varname2, "',  
+  base_family = 'NanumSquare')
+```
+
+", collapse = "", sep = "")
+  
+  chunk
+}
+
+
+##==============================================================================
+## 01.04. 통계량 - 1차원 통계량 & 플롯
+##==============================================================================
+get_stats_summary <- function(.data, varname) {
+  master <- M_CUST_MAIN %>% 
+    bind_rows(M_CUST_PLCY) %>% 
+    bind_rows(M_CUST_HELLO) %>%   
+    filter(colum_nm %in% varname)
+  
+  colum_id <- master$colum_id[1]
+  
+  stats <- .data %>% 
+    select(all_of(colum_id)) %>% 
+    dlookr::describe() %>% 
+    select(variable, n, na, p00, p25, mean, p50, p75, p100, IQR) %>% 
+    mutate(lower_fense = p25 - 1.5 * IQR,
+           upper_fense = p75 + 1.5 * IQR) 
+  
+  stats$n_outlier <- .data %>% 
+    select(all_of(colum_id)) %>% 
+    pull() %>% 
+    boxplot.stats() %>% 
+    "[["("out") %>% 
+    length()
+  
+  tag_tab <- stats %>% 
+    select(
+      `데이터건수` = n,
+      `결측치수`   = na,
+      `최솟값`     = p00,
+      `25%값`      = p25,
+      `산술평균`   = mean,
+      `중위수`     = p50,
+      `75%값`      = p75,
+      `최댓값`     = p100
+    ) %>% 
+    knitr::kable(format = "html",
+                 format.args = list(big.mark = ",")) %>% 
+    kableExtra::kable_styling()
+  
+  tabs <- .data %>% 
+    select(all_of(colum_id)) 
+  
+  n_bins <- round(log2(stats$n) + 1)
+  n_bins_adj <- round(log2(stats$n - stats$n_outlier) + 1)      
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(tabs, n_bins, n_bins_adj, stats,
+       file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### ", varname, " 분포 현황
+
+",
+    
+    tag_tab,
+    
+    "
+    
+:::: {style='display: grid; grid-template-columns: 48% 48%; grid-column-gap: 4%;'}
+
+::: {}
+    
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5, fig.height=4}
+library(dplyr)
+library(ggplot2)
+
+load(file = 'raw_", id, ".rda')
+
+p <- tabs %>% 
+  ggplot(aes(x = ", master$colum_id[1] , ")) +
+    geom_histogram(fill = 'steelblue', color = 'black', alpha = 0.8, 
+                   bins = n_bins) +
+    labs(title = paste0('", varname, "', ' 분포'), x = '", varname, "', 
+         y = '고객수') +
+    hrbrthemes::theme_ipsum(base_family = 'NanumSquare') 
+  
+plotly::ggplotly(p) %>%
+  plotly::config(displayModeBar = FALSE)
+       
+```
+
+:::
+  
+::: {}
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5, fig.height=4}
+p <- tabs %>% 
+  ggplot(aes(x = ", master$colum_id[1] , ")) +
+    geom_histogram(fill = 'steelblue', color = 'black', alpha = 0.8, 
+                   bins = n_bins_adj) +
+    xlim(", stats$lower_fense, ", ", stats$upper_fense, ") +                
+    labs(title = paste0('", varname, "', ' 분포(이상치제거)'), x = '", varname, "', 
+         y = '고객수') +
+    hrbrthemes::theme_ipsum(base_family = 'NanumSquare') 
+  
+plotly::ggplotly(p) %>%
+  plotly::config(displayModeBar = FALSE)
+       
+```
+:::
+  
+::::
+
+", collapse = "", sep = "")
+  
+  chunk
+}
+
+
+get_stats_summary <- function(.data, varname) {
+  master <- M_CUST_MAIN %>% 
+    bind_rows(M_CUST_PLCY) %>% 
+    bind_rows(M_CUST_HELLO) %>%   
+    filter(colum_nm %in% varname)
+  
+  colum_id <- master$colum_id[1]
+  
+  stats <- .data %>% 
+    select(all_of(colum_id)) %>% 
+    dlookr::describe() %>% 
+    select(variable, n, na, p00, p25, mean, p50, p75, p100, IQR) %>% 
+    mutate(lower_fense = p25 - 1.5 * IQR,
+           upper_fense = p75 + 1.5 * IQR) 
+  
+  stats$n_outlier <- .data %>% 
+    select(all_of(colum_id)) %>% 
+    pull() %>% 
+    boxplot.stats() %>% 
+    "[["("out") %>% 
+    length()
+  
+  tag_tab <- stats %>% 
+    select(
+      `데이터건수` = n,
+      `결측치수`   = na,
+      `최솟값`     = p00,
+      `25%값`      = p25,
+      `산술평균`   = mean,
+      `중위수`     = p50,
+      `75%값`      = p75,
+      `최댓값`     = p100
+    ) %>% 
+    knitr::kable(format = "html",
+                 format.args = list(big.mark = ",")) %>% 
+    kableExtra::kable_styling()
+  
+  tabs <- .data %>% 
+    select(all_of(colum_id)) 
+  
+  n_bins <- round(log2(stats$n) + 1)
+  n_bins_adj <- round(log2(stats$n - stats$n_outlier) + 1)      
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(tabs, n_bins, n_bins_adj, stats, tag_tab,
+       file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### ", varname, " 분포 현황
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+load(file = 'raw_", id, ".rda')
+
+tag_tab
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=2.5, fig.height=2, multi.col=TRUE, out.width='100%'}
+library(dplyr)
+library(ggplot2)
+
+p <- tabs %>% 
+  ggplot(aes(x = ", master$colum_id[1] , ")) +
+    geom_histogram(fill = 'steelblue', color = 'black', alpha = 0.8, 
+                   bins = n_bins) +
+    labs(title = paste0('", varname, "', ' 분포'), x = '", varname, "', 
+         y = '고객수') +
+    hrbrthemes::theme_ipsum(base_family = 'NanumSquare') 
+  
+p
+       
+p <- tabs %>% 
+  ggplot(aes(x = ", master$colum_id[1] , ")) +
+    geom_histogram(fill = 'steelblue', color = 'black', alpha = 0.8, 
+                   bins = n_bins_adj) +
+    xlim(", stats$lower_fense, ", ", stats$upper_fense, ") +                
+    labs(title = paste0('", varname, "', ' 분포(이상치제거)'), x = '", varname, "', 
+         y = '고객수') +
+    hrbrthemes::theme_ipsum(base_family = 'NanumSquare') 
+  
+p
+       
+```
+", collapse = "", sep = "")
+  
+  chunk
+}
+
+
+##==============================================================================
+## 01.05. 통계량 - 그룹별 통계량 & 플롯
+##==============================================================================
+get_statsby_summary <- function(.data, varname_cat, varname_num) {
+  master <- M_CUST_MAIN %>% 
+    bind_rows(M_CUST_PLCY) %>% 
+    bind_rows(M_CUST_HELLO) %>%   
+    filter(colum_nm %in% c(varname_cat, varname_num))
+  
+  name_group <- master %>% 
+    filter(type %in% "attribute") %>% 
+    select(colum_id) %>% 
+    unlist()
+  
+  name_metric <- master %>% 
+    filter(type %in% c("metric", "currency")) %>% 
+    select(colum_id) %>% 
+    unlist()  
+  
+  master <- M_CODES %>% 
+    filter(code_nm %in% varname_cat)
+  
+  if (NROW(master) == 0) {
+    tag_tab <- .data %>% 
+      group_by_at(name_group) %>% 
+      dlookr::describe(all_of(name_metric)) %>% 
+      mutate(colum_id = as.character(colum_id)) %>% 
+      select(colum_id, n, na, p00, p25, mean, p50, p75, p100) %>% 
+      mutate(colum_id = if_else(is.na(colum_id), "결측치", colum_id) %>% 
+               factor()) %>%  
+      mutate(colum_id = forcats::fct_expand(colum_id, c("Y", "N", "결측치"))) %>%         
+      select(
+        !!varname_cat := colum_id, 
+        `데이터건수` = n,
+        `결측치수`   = na,
+        `최솟값`     = p00,
+        `25%값`      = p25,
+        `산술평균`   = mean,
+        `중위수`     = p50,
+        `75%값`      = p75,
+        `최댓값`     = p100
+      ) %>% 
+      knitr::kable(format = "html",
+                   format.args = list(big.mark = ",")) %>% 
+      kableExtra::kable_styling()
+  } else {
+    tag_tab <- .data %>% 
+      group_by_at(name_group) %>% 
+      dlookr::describe(all_of(name_metric)) %>% 
+      mutate(colum_id = as.character(colum_id)) %>% 
+      select(colum_id, n, na, p00, p25, mean, p50, p75, p100) %>% 
+      left_join(master,
+                by =c("colum_id" = "code") 
+      ) %>% 
+      select(
+        !!varname_cat := decode, 
+        `데이터건수` = n,
+        `결측치수`   = na,
+        `최솟값`     = p00,
+        `25%값`      = p25,
+        `산술평균`   = mean,
+        `중위수`     = p50,
+        `75%값`      = p75,
+        `최댓값`     = p100
+      ) %>% 
+      knitr::kable(format = "html",
+                   format.args = list(big.mark = ",")) %>% 
+      kableExtra::kable_styling()
+  }
+  
+  var_names <- c(name_group, name_metric)
+  names(var_names) <- NULL
+  
+  if (NROW(master) == 0) {
+    tabs <- .data %>% 
+      select(all_of(var_names)) %>% 
+      mutate_at(vars(name_group), as.character) %>% 
+      select(!!varname_cat := 1, !!name_metric := 2) %>% 
+      mutate_at(vars(varname_cat), function(x) if_else(is.na(x), "결측치", x)) %>%  
+      mutate_at(vars(name_metric), factor, labels = c("Y", "N", "결측치")) 
+  } else {
+    tabs <- .data %>% 
+      select(all_of(var_names)) %>% 
+      mutate_at(vars(name_group), as.character) %>% 
+      left_join(
+        M_CODES %>% 
+          filter(code_nm %in% varname_cat) %>% 
+          select(!!name_group := code, !!varname_cat := decode)
+      ) 
+  }
+  
+  id <- paste0("set-", shiny:::createUniqueId(5))
+  
+  save(tabs, 
+       file = glue::glue("{getwd()}/www/report/raw_{id}.rda"))
+  
+  chunk <- paste(
+    "
+### ", varname_cat, " 그룹별 ", varname_num, " 분포 현황
+
+",
+    
+    tag_tab,
+    
+    "
+
+    
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5, fig.height=3, out.width='95%'}
+library(dplyr)
+library(ggplot2)
+
+load(file = 'raw_", id, ".rda')
+
+p <- tabs %>% 
+       ggplot(aes_string(x = '", name_metric, "', y = '", varname_cat, "', group = '", varname_cat, "')) +
+       ggridges::geom_density_ridges(fill = '#00AFBB', alpha = 0.5) + 
+       labs(x = '", varname_num, "') +
+         hrbrthemes::theme_ipsum(base_family = 'NanumSquare') 
+
+p  
+```
+
+", collapse = "", sep = "")
+  
+  chunk
+}

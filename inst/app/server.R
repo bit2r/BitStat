@@ -1,6 +1,14 @@
 shinyServer(function(input, output, session) {
+  # A notification ID
+  notice_id <- NULL
+  
   ## load source for menu
   for (file in list.files(c("menu"), pattern = "\\.(r|R)$", full.names = TRUE)) {
+    source(file, local = TRUE)
+  }
+  
+  ## load source for report
+  for (file in list.files(c("report"), pattern = "\\.(r|R)$", full.names = TRUE)) {
     source(file, local = TRUE)
   }
 

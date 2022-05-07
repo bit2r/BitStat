@@ -1,0 +1,41 @@
+---
+title: "&nbsp;"
+output: 
+  html_document:
+    number_sections: false
+    toc: true    
+    css: theme.css
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+# reference https://stackoverflow.com/questions/54441565/grid-layout-in-an-r-markdown
+library(stringi)
+
+defChunkHook <- knitr::knit_hooks$get("chunk")
+
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- defChunkHook(x, options)
+  
+  if(!is.null(options$multi.col)) {
+    # wrap div around output chunks
+    x <- gsub("(\n\`\`\`\n##.*?\`\`\`)", "<div>\\1\n</div>", x)
+    
+    # wrap div around plots
+    x <- gsub("(<img.*?>)", "<div>\\1\n</div>", x)
+    
+    # get the number of div elements created
+    ncol <- nrow(stri_locate_all(x, regex = "<div.*?>")[[1]])
+    
+    # add the width to the divs
+    x <- gsub("<div>", paste0("<div style=\"width:", 100/ncol,"%;\">"), x)  
+    
+    # wrap the mother div around all of the output
+    x <- paste0(
+      "<div class=\"multi-col\" style=\"display: flex; justify-content: center; align-items: flex-start;\">\n", 
+      x, 
+      "</div>")  
+  }
+  
+  x
+})
+```

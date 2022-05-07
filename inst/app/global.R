@@ -25,6 +25,7 @@ library(shinydashboardPlus)
 library(shinybusy)
 library(colourpicker)
 library(htmltools)
+library(flextable)
 
 ##------------------------------------------------------------------------------
 ## 01.01.03. Load packages that are tidyverse families
@@ -36,7 +37,7 @@ library(reactable)
 library(glue)
 library(dlookr)
 library(openxlsx)
-library(flextable)
+
 
 ##==============================================================================
 ## 01.02. Loading Sources
@@ -108,6 +109,21 @@ names(element_change_type) <- c(translate("범주형으로"), translate("연속�
                                 translate("정수형으로"), translate("문자형으로"), 
                                 translate("날짜(Y-M-D)로"))
 
+## 상관계수 종류
+element_corr_method <- list("pearson", 
+                                   "kendall",
+                                   "spearman")
+names(element_corr_method) <- c(translate("피어슨의 적률 상관계수"), 
+                                       translate("켄달의 순위 상관계수"),
+                                       translate("스피어만의 순위 상관계수"))
+
+## 상관검정의 대립가설
+element_alternative_test <- list("two.sided", 
+                              "less",
+                              "greater")
+names(element_alternative_test) <- c(translate("상관계수 ≠ 0"), 
+                                     translate("상관계수 < 0"),
+                                     translate("상관계수 > 0"))
 
 ## load source for tools
 for (file in list.files(c("tools"), pattern = "\\.(r|R)$", full.names = TRUE)) {
