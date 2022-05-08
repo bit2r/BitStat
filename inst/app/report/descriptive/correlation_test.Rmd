@@ -35,7 +35,7 @@ htmltools::h3(
   
 formula <- variables %>% 
   stringr::str_replace_all("^|$", "`") %>% 
-  stringr::str_replace(",", "`,`") %>% 
+  stringr::str_replace_all(",", "`,`") %>% 
   strsplit(",") %>% 
   unlist() %>% 
   paste(sep = "`", collapse = " + ") %>% 

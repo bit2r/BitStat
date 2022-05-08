@@ -109,6 +109,10 @@ names(element_change_type) <- c(translate("범주형으로"), translate("연속�
                                 translate("정수형으로"), translate("문자형으로"), 
                                 translate("날짜(Y-M-D)로"))
 
+## 대상변수 선택 방법
+element_choice_cmatrix <- list("all", "user")
+names(element_choice_cmatrix) <- c(translate("전체"), translate("사용자 선택"))
+
 ## 상관계수 종류
 element_corr_method <- list("pearson", 
                                    "kendall",

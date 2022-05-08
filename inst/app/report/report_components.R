@@ -4,7 +4,8 @@
 ##==============================================================================
 ## 01.01. 상관행렬
 ##==============================================================================
-create_mat_corr <- function(id_dataset, method = c("pearson", "kendall", "spearman"),
+create_mat_corr <- function(id_dataset, variables = NULL, 
+                            method = c("pearson", "kendall", "spearman"),
                             digits = 3, group_flag = FALSE, group_variable = NULL, 
                             plot = TRUE,
                             output_dir = glue::glue("{getwd()}/www/report"), 
@@ -19,12 +20,20 @@ create_mat_corr <- function(id_dataset, method = c("pearson", "kendall", "spearm
                         "app", "report", "descriptive", source_rmd)
   flag <- file.copy(from = rmd_file, to = target_rmd)
   
+  variables <- variables %>% 
+    paste(collapse = ",")
+  
   group_variable <- group_variable %>% 
     paste(collapse = ",")
   
   #--Store parameters ----------------------------------------------------------  
   # id_dataset
   rmd_content <- sub("\\$id_dataset\\$", id_dataset, 
+                     readLines(target_rmd))
+  cat(rmd_content, file = target_rmd, sep = "\n")
+  
+  # variables
+  rmd_content <- sub("\\$variables\\$", variables, 
                      readLines(target_rmd))
   cat(rmd_content, file = target_rmd, sep = "\n")
   

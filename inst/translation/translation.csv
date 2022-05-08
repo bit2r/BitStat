@@ -128,6 +128,9 @@ Statistics,Statistics
 상관행렬,Correlation Matrix
 상관행렬 플롯,Correlation Matrix Plot
 상관행렬 설정,Setup Correlation Matrix
+대상변수 선택 방법:,Target variable selection type:
+전체,All
+사용자 선택,User choose
 상관행렬은 정수와 실수만 지원합니다.,Correlation matrix only support numeric and integer.
 상관계수 종류:,Correlation Coefficient method:
 범주별 계산,Calculate by category
@@ -136,7 +139,8 @@ Statistics,Statistics
 상관계수 소수점 자리수:,Coefficient digits:
 상관검정 설정,Setup Correlation Tests
 대립가설:,Alternative hypothesis:
-수치형 변수 목록(두개 선택):, Numerical Variables(Choose two variables):
+수치형 변수 목록(두개 선택):,Numerical Variables(Choose two):
+수치형 변수 목록(두개이상 선택):,Numerical Variables(Choose two or more):
 피어슨의 적률 상관계수,Pearson’s r statistic
 켄달의 순위 상관계수,Kendall's tau statistic
 스피어만의 순위 상관계수,Spearman's rho statistic
@@ -151,6 +155,7 @@ Statistics,Statistics
 실제 상관계수 #1는 0보다 작습니다,true #1 is less than 0
 실제 상관계수 #1는 0보다 큽니다,true #1 is greater than 0
 수치변수는 2개를 선택해야 합니다.,You must select two numeric variables.
+수치변수는 2개 이상을 선택해야 합니다.,You must select at least two numeric variables.
 상관관계 플롯,Correlation Plot
 두 변수의 상관관계,Visualize the relationship between two variables
 관측치의 수가 충분하지 않습니다,not enough finite observations

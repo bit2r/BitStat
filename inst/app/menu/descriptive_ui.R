@@ -16,6 +16,21 @@ output$correlation_matrix <- renderUI({
         wellPanel(
           style = "padding-top:5px;padding-bottom:10px",
           h4(translate("상관행렬 설정")),
+          radioButtons(
+            inputId = "choice_variable_cmat", 
+            label = translate("대상변수 선택 방법:"),
+            choices = element_choice_cmatrix, 
+            selected = "all"),
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.choice_variable_cmat == 'user'",      
+            fluidRow(
+              column(
+                width = 12,
+                uiOutput('list_num_var_corrmat')
+              )  
+            )    
+          ),          
           selectizeInput(
             inputId = "correlation_method",
             label = translate("상관계수 종류:"),
@@ -71,11 +86,39 @@ output$correlation_matrix <- renderUI({
 
 
 ##------------------------------------------------------------------------------
-## 03.01.02. 데이터 > 데이터 변환 > 변수 변경 이벤트 정의
+## 03.01.02. 수치형 변수 목록 생성
 ##------------------------------------------------------------------------------
-# 변수 리스트 출력 -------------------------------------------------------------
+output$list_num_var_corrmat <- renderUI({
+  req(input$combo_dataset)
+
+  id_dataset <- input$combo_dataset
+  
+  list_num <- dslists()[[id_dataset]]$dataset %>%
+    get_class() %>% 
+    filter(class %in% c("numeric", "integer")) %>% 
+    select(variable) %>% 
+    pull()
+  
+  selectInput(
+    inputId = "list_num_var_corrmat", 
+    label = translate("수치형 변수 목록(두개이상 선택):"),
+    choices = list_num,
+    multiple = TRUE,
+    width = "250"
+  )
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.03. 범주형 변수 목록 생성
+##------------------------------------------------------------------------------
 output$list_cat_var_corrmat <- renderUI({
   req(input$combo_dataset)
+  
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
   
   id_dataset <- input$combo_dataset
   
@@ -85,14 +128,40 @@ output$list_cat_var_corrmat <- renderUI({
     select(variable) %>% 
     pull()
   
-  selectInput("list_cat_var_corrmat", translate("범주형 변수 목록:"),
-              choices = list_cat,
-              multiple = TRUE,
-              width = "250")
+  selectInput(
+    inputId = "list_cat_var_corrmat", 
+    label = translate("범주형 변수 목록:"),
+    choices = list_cat,
+    multiple = TRUE,
+    width = "250"
+  )
 })
 
+
 ##------------------------------------------------------------------------------
-## 03.03. 범주별 계산 체크버튼 선택
+## 03.01.04. 수치형 변수선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$list_num_var_corrmat, {
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.05. 범주형 변수선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$list_cat_var_corrmat, {
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.06. 범주별 계산 체크버튼 선택 이벤트
 ##------------------------------------------------------------------------------
 observeEvent(input$is_group_corr_mat, {
   req(input$combo_dataset)
@@ -115,16 +184,36 @@ observeEvent(input$is_group_corr_mat, {
                     choices = list_cat)
 })
 
+
 ##------------------------------------------------------------------------------
-## 03.03. 실행 버튼 클릭
+## 03.01.07. 실행 버튼 클릭 이벤트
 ##------------------------------------------------------------------------------
 observeEvent(input$runCorrelationMatrix, {
   req(input$combo_dataset)
   
   id_dataset <- input$combo_dataset
   
+  if (length(input$list_num_var_corrmat) < 2) {
+    message <- translate("수치변수는 2개 이상을 선택해야 합니다.")
+    
+    # Save the ID for removal later
+    notice_id <<- showNotification(message, duration = 0, type = "error")
+    
+    return()
+  }
+  
+  if (input$is_group_corr_mat & length(input$list_cat_var_corrmat) == 0) {
+    message <- translate("범주별 검정을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
+    
+    # Save the ID for removal later
+    notice_id <<- showNotification(message, duration = 0, type = "error")
+    
+    return()
+  }  
+  
   rmd_content <- create_mat_corr(
     id_dataset = id_dataset, 
+    variables =  input$list_num_var_corrmat,
     method = input$method,
     digits = input$diglab_corr_mat,
     group_flag = input$is_group_corr_mat,
@@ -217,11 +306,8 @@ output$correlation_test <- renderUI({
 })
 
 
-##==============================================================================
-## 03.03. 리포트 생성 이벤트 핸들러
-##==============================================================================
 ##------------------------------------------------------------------------------
-## 03.03. 수치형 변수 목록 생성
+## 03.02.02. 수치형 변수 목록 생성
 ##------------------------------------------------------------------------------
 output$list_varriable_corrtest <- renderUI({
   req(input$combo_dataset)
@@ -234,14 +320,18 @@ output$list_varriable_corrtest <- renderUI({
     select(variable) %>% 
     pull()
   
-  selectInput("list_varriable_corrtest", translate("수치형 변수 목록(두개 선택):"),
-              choices = list_num,
-              multiple = TRUE,
-              width = "250")
+  selectInput(
+    inputId = "list_varriable_corrtest", 
+    label = translate("수치형 변수 목록(두개 선택):"),
+    choices = list_num,
+    multiple = TRUE,
+    width = "250"
+  )
 })
 
+
 ##------------------------------------------------------------------------------
-## 03.03. 범주형 변수 목록 생성
+## 03.02.03. 범주형 변수 목록 생성
 ##------------------------------------------------------------------------------
 output$list_cat_var_corrtest <- renderUI({
   req(input$combo_dataset)
@@ -254,15 +344,18 @@ output$list_cat_var_corrtest <- renderUI({
     select(variable) %>% 
     pull()
   
-  selectInput("list_cat_var_corrtest", translate("범주형 변수 목록:"),
-              choices = list_cat,
-              multiple = TRUE,
-              width = "250")
+  selectInput(
+    inputId = "list_cat_var_corrtest", 
+    label = translate("범주형 변수 목록:"),
+    choices = list_cat,
+    multiple = TRUE,
+    width = "250"
+  )
 })
 
 
 ##------------------------------------------------------------------------------
-## 03.03. 변수선택 버튼 선택
+## 03.02.04. 변수선택 이벤트
 ##------------------------------------------------------------------------------
 observeEvent(input$list_varriable_corrtest, {
   if (!is.null(notice_id))
@@ -273,7 +366,7 @@ observeEvent(input$list_varriable_corrtest, {
 
 
 ##------------------------------------------------------------------------------
-## 03.04. 범주별 계산 체크버튼 선택
+## 03.02.05. 범주별 계산 체크버튼 체크 이벤트
 ##------------------------------------------------------------------------------
 observeEvent(input$is_group_corr_test, {
   req(input$combo_dataset)
@@ -303,7 +396,7 @@ observeEvent(input$is_group_corr_test, {
 
 
 ##------------------------------------------------------------------------------
-## 03.05. 실행 버튼 클릭
+## 03.02.06. 실행 버튼 클릭
 ##------------------------------------------------------------------------------
 observeEvent(input$runCorrelationTest, {
   req(input$combo_dataset)

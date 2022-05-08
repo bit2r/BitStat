@@ -1,28 +1,32 @@
-CHANGES IN R VERSION 0.5.0.9001:
+CHANGES IN R VERSION 0.5.1:
+  NEW FUCTION LIST:
+  * Discriptive Statistics 
+    - Correlation 
+      - Correlation Matrix (#9)
+      - Correlation Test (#3)
+        
   BUG FIXES:
-
     * Fixed an error with error message that is "invalid multibyte string at" 
       in launch() when excute in MS-Windows 10. (thanks @statkclee, #1)
 
   MAJOR CHANGES:
-    
-    * 
+    * Implement logic to get a matching alternative message by receiving 
+      the value of a specific location as a parameter (#4) 
       
   MINOR CHANGES:
-    
     * The engine for i18n was changed from the shiny.i18n package to a 
       self-developed function. The reason is that an error occurred in the 
       logic for converting Hangul messages in MS-Windows.
     * The xlsx package was replaced with the openxlsx package for handling 
       excel files. This is because the openxlsx package is a package that 
-      does not require JAVA.  
+      does not require JAVA.
     
     
       
-CHANGES IN R VERSION 0.5.0.9000:
+CHANGES IN R VERSION 0.5.0:
   FUCTION LIST:
-
-    * Prepare data menu 
+  * Data
+    - Prepare data menu 
       - Import data
         . CSV(TSV) files
         . Excel files
@@ -32,16 +36,14 @@ CHANGES IN R VERSION 0.5.0.9000:
         . Edit dataset information
         . Download datasets
         . Export all datasets and meta data
-      
-    * Diagnose data
+    - Diagnose data
       - Overview of data diagnosis
       - Overview variables
       - Overview outlers
       - Reporting
         . PDF
         . html
-      
-    * Transform data
+    - Transform data
       - Manipulate variables
         . Rename variables
         . Change data type
@@ -52,6 +54,6 @@ CHANGES IN R VERSION 0.5.0.9000:
         . Bin
       
   FEATURE LIST:      
-    * Support multi language
+    - Support multi language
       - Korean
       - English
