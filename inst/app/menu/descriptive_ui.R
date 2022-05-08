@@ -193,7 +193,7 @@ observeEvent(input$runCorrelationMatrix, {
   
   id_dataset <- input$combo_dataset
   
-  if (length(input$list_num_var_corrmat) < 2) {
+  if (input$choice_variable_cmat == "user" & length(input$list_num_var_corrmat) < 2) {
     message <- translate("수치변수는 2개 이상을 선택해야 합니다.")
     
     # Save the ID for removal later

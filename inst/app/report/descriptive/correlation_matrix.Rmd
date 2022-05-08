@@ -32,17 +32,23 @@ htmltools::h3(
   "[["(id_dataset) %>% 
   "[["("dataset")
   
-variables <- variables %>% 
+if (variables != "") {
+  variables <- variables %>% 
   # stringr::str_replace_all("^|$", "`") %>% 
   # stringr::str_replace_all(",", "`,`") %>% 
   strsplit(",") %>% 
   unlist() 
-
+}
 
 if (!group_flag) {
-  corr <- .data %>% 
-    select(all_of(variables)) %>% 
-    dlookr::correlate(method = method) 
+  if (variables != "") {  
+    corr <- .data %>% 
+      select(all_of(variables)) %>% 
+      dlookr::correlate(method = method)     
+  } else {
+    corr <- .data %>% 
+      dlookr::correlate(method = method)     
+  }  
   
   corr %>% 
     tidyr::spread(var1, coef_corr, fill = 1) %>% 
@@ -57,10 +63,16 @@ if (!group_flag) {
   strsplit(",") %>% 
   unlist()
   
-  corr <- .data %>% 
-    select(all_of(c(variables, group_variable))) %>% 
-    group_by(across(all_of(group_variable))) %>% 
-    dlookr::correlate(method = method) 
+  if (variables != "") {  
+    corr <- .data %>% 
+      select(all_of(c(variables, group_variable))) %>% 
+      group_by(across(all_of(group_variable))) %>% 
+      dlookr::correlate(method = method)    
+  } else {
+    corr <- .data %>% 
+      group_by(across(all_of(group_variable))) %>% 
+      dlookr::correlate(method = method)      
+  }  
   
   mat_group <- corr %>% 
     tidyr::spread(var1, coef_corr, fill = 1) %>% 

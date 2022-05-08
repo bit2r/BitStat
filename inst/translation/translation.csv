@@ -36,15 +36,35 @@ kr,en
 파일선택,Browse...
 샘플 데이터 미리보기,Preview samples
 데이터셋 이름:,Dataset name:
-생성할 데이터셋 이름을 입력하세요.,Name of the dataset you want to create 데이터셋 설명:,Dataset description:
-생성할 데이터의 설명을 입력하세요.,Description of the dataset you want to create 저장,Save 데이터셋 목록,Dataset list 데이터셋 아이디,Dataset ID 데이터셋 이름,Dataset name 데이터셋 설명,Dataset description 관측치 개수,Number of observations 변수 개수,Number of variables 변수 이름,Variable name 데이터 타입,Data type 변수 정보,Variables 샘플 데이터,Sample data 데이터셋 삭제,Delete 데이터셋 편집,Edit 데이터셋 받기,Download 수정,Modify 취소,Cancel 파일 포맷 선택:,File format:
+생성할 데이터셋 이름을 입력하세요.,Name of the dataset you want to create
+데이터셋 설명:,Dataset description:
+생성할 데이터의 설명을 입력하세요.,Description of the dataset you want to create
+저장,Save
+데이터셋 목록,Dataset list
+데이터셋 아이디,Dataset ID
+데이터셋 이름,Dataset name
+데이터셋 설명,Dataset description
+관측치 개수,Number of observations
+변수 개수,Number of variables
+변수 이름,Variable name
+데이터 타입,Data type
+변수 정보,Variables
+샘플 데이터,Sample data
+데이터셋 삭제,Delete
+데이터셋 편집,Edit
+데이터셋 받기,Download
+수정,Modify
+취소,Cancel
+파일 포맷 선택:,File format:
 파일 이름:,File name:
 파일 받기,Download
 전체 다운로드,Downloas all
 데이터 진단 개요,Overview of data diagnosis
 데이터 진단 집계:,Summary diagnosis
 데이터 진단 상세:,List of diagnosis
-변수별 데이터 진단,List of diagnosis by variables Distribution,Distribution Cardinality/Missing,Cardinality/Missing
+변수별 데이터 진단,List of diagnosis by variables
+Distribution,Distribution
+Cardinality/Missing,Cardinality/Missing
 Statistics,Statistics
 변수별 이상치 진단,List of outlers
 보고서 커버 설정,Report cover
