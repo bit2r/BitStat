@@ -40,6 +40,12 @@ if (variables != "") {
   unlist() 
 }
 
+lab_method <- case_when(
+  method %in% "pearson" ~ translate("피어슨의 적률 상관계수"),
+  method %in% "kendall" ~ translate("켄달의 순위 상관계수"),
+  method %in% "spearman" ~ translate("스피어만의 순위 상관계수")
+)
+
 if (!group_flag) {
   if (variables != "") {  
     corr <- .data %>% 
@@ -55,7 +61,7 @@ if (!group_flag) {
     rename("variables" = var2) %>% 
     flextable::flextable() %>%
     flextable::colformat_double(digits = digits) %>% 
-    flextable::set_caption(caption = glue::glue("Correlation Matrix ({method})")) %>% 
+    flextable::set_caption(caption = glue::glue("{translate('상관행렬')} ({lab_method})")) %>% 
     flextable::theme_booktabs() %>% 
     flextable::flextable_to_rmd()
 } else {
@@ -98,7 +104,7 @@ if (!group_flag) {
           select(-all_of(group_variable)) %>%
           flextable::flextable() %>%
           flextable::colformat_double(digits = digits) %>% 
-          flextable::set_caption(caption = glue::glue("Correlation Matrix ({labs} : {method})")) %>% 
+          flextable::set_caption(caption = glue::glue("{translate('상관행렬')} ({labs} : {lab_method})")) %>% 
           flextable::theme_booktabs() %>% 
           flextable::flextable_to_rmd()
         }

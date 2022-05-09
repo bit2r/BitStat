@@ -1,4 +1,250 @@
 ################################################################################
+## 03. 기술통계 > 집계표
+################################################################################
+##==============================================================================
+## 03.01. 기술통계 > 집계표 > 수치형 변수
+##==============================================================================
+##------------------------------------------------------------------------------
+## 03.01.01. 기술통계 > 집계표 > 수치형 변수 UI 정의
+##------------------------------------------------------------------------------
+output$summary_numeric <- renderUI({
+  tagList(
+    fluidRow(
+      style = "padding-top:10px;padding-bottom:0px",
+      column(
+        width = 3,
+        wellPanel(
+          style = "padding-top:5px;padding-bottom:10px",
+          h4(translate("집계표 설정")),
+          radioButtons(
+            inputId = "choice_numerical_summary", 
+            label = translate("대상변수 선택 방법:"),
+            choices = element_method_choose_variables, 
+            selected = "all"),
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.choice_numerical_summary == 'user'",      
+            fluidRow(
+              column(
+                width = 12,
+                uiOutput('list_num_var_summary')
+              )  
+            )    
+          ),          
+          selectizeInput(
+            inputId = "statistics_method",
+            label = translate("통계량 종류:"),
+            choices = element_statistics,
+            selected = c("na", "mean", "sd", "skewness", "kurtosis"),
+            multiple = TRUE,
+            width = "250"
+          ),
+          selectizeInput(
+            inputId = "quantiles_method",
+            label = translate("분위수 종류:"),
+            choices = element_quantiles,
+            selected = c("p00", "p25", "p50", "p75", "p100"),
+            multiple = TRUE,            
+            width = "250"
+          ),          
+          checkboxInput(
+            inputId = "is_group_num_summary",
+            label = translate("범주별 계산"),
+            value = FALSE
+          ),      
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.is_group_num_summary == 1",      
+            fluidRow(
+              column(
+                width = 12,
+                uiOutput('list_cat_var_summary')
+              )  
+            )    
+          ),          
+          numericInput(
+            inputId = "diglab_num_summary",
+            label = translate("통계량 소수점 자리수:"),
+            min = 0, max = 10, value = 3,
+            width = "250"
+          ),
+          checkboxInput(
+            inputId = "viz_num_summary",
+            label = translate("시각화 여부"),
+            value = FALSE
+          ),      
+          actionButton(
+            inputId = "runNumericalSummary",
+            label = translate("실행"),
+            icon = icon("cogs"),
+            style = "background-color: #90CAF9; border: none;"
+          )   
+        )
+      ),
+      
+      column(
+        width = 9,
+        wellPanel(
+          style = "padding-top:10px; padding-left:10px; padding-right:10px",
+          htmlOutput("num_summary", style = "height: 700px;")
+        )
+      )
+    )
+  )
+})
+
+##------------------------------------------------------------------------------
+## 03.01.02. 수치형 변수 목록 생성
+##------------------------------------------------------------------------------
+output$list_num_var_summary <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  list_num <- dslists()[[id_dataset]]$dataset %>%
+    get_class() %>% 
+    filter(class %in% c("numeric", "integer")) %>% 
+    select(variable) %>% 
+    pull()
+  
+  selectInput(
+    inputId = "list_num_var_summary", 
+    label = translate("수치형 변수 목록(하나이상 선택):"),
+    choices = list_num,
+    multiple = TRUE,
+    width = "250"
+  )
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.03. 범주형 변수 목록 생성
+##------------------------------------------------------------------------------
+output$list_cat_var_summary <- renderUI({
+  req(input$combo_dataset)
+  
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+  
+  id_dataset <- input$combo_dataset
+  
+  list_cat <- dslists()[[id_dataset]]$dataset %>%
+    get_class() %>% 
+    filter(class %in% c("factor", "ordered")) %>% 
+    select(variable) %>% 
+    pull()
+  
+  selectInput(
+    inputId = "list_cat_var_summary", 
+    label = translate("범주형 변수 목록:"),
+    choices = list_cat,
+    multiple = TRUE,
+    width = "250"
+  )
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.04. 수치형 변수선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$list_num_var_summary, {
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.05. 범주형 변수선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$list_cat_var_summary, {
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.06. 범주별 계산 체크버튼 선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$is_group_num_summary, {
+  req(input$combo_dataset)
+  
+  if (!input$is_group_num_summary) {
+    return()
+  }
+  
+  id_dataset <- input$combo_dataset
+  
+  list_cat <- dslists()[[id_dataset]]$dataset %>%
+    get_class() %>% 
+    filter(class %in% c("factor", "ordered")) %>% 
+    select(variable) %>% 
+    pull() %>% 
+    as.character()
+  
+  updateSelectInput(session, 
+                    "list_cat_var_summary",
+                    choices = list_cat)
+})
+
+
+##------------------------------------------------------------------------------
+## 03.01.07. 실행 버튼 클릭 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$runNumericalSummary, {
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  if (input$is_group_num_summary == "user" & length(input$list_num_var_summary) < 1) {
+    message <- translate("수치변수는 1개 이상을 선택해야 합니다.")
+    
+    # Save the ID for removal later
+    notice_id <<- showNotification(message, duration = 0, type = "error")
+    
+    return()
+  }
+  
+  if (input$is_group_num_summary & length(input$list_cat_var_summary) == 0) {
+    message <- translate("범주별 검정을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
+    
+    # Save the ID for removal later
+    notice_id <<- showNotification(message, duration = 0, type = "error")
+    
+    return()
+  }  
+  
+  rmd_content <- create_summary_numeric(
+    id_dataset = id_dataset, 
+    variables =  input$list_num_var_summary,
+    statistics = input$statistics_method,
+    quantiles = input$quantiles_method,
+    digits = input$diglab_num_summary,
+    group_flag = input$is_group_num_summary,
+    group_variable = input$list_cat_var_summary,
+    plot = input$viz_num_summary
+  )
+  
+  output$num_summary <- renderUI({
+    input$runNumericalSummary
+    
+    tags$iframe(
+      seamless = "seamless",
+      src = "report/num_summary.html",
+      width = "100%",
+      height = "100%"
+    )
+  })
+})
+
+
+
+################################################################################
 ## 03. 기술통계 > 상관관계
 ################################################################################
 ##==============================================================================
@@ -19,7 +265,7 @@ output$correlation_matrix <- renderUI({
           radioButtons(
             inputId = "choice_variable_cmat", 
             label = translate("대상변수 선택 방법:"),
-            choices = element_choice_cmatrix, 
+            choices = element_method_choose_variables, 
             selected = "all"),
           conditionalPanel(
             style = "padding-top:0px;",
@@ -452,6 +698,16 @@ output$ui_desc_data <- renderUI({
     tabBox(
       width = 12,
       tabPanel(
+        title = translate("집계표"),
+        tabsetPanel(
+          tabPanel(
+            title = translate("수치형 변수"), 
+            uiOutput("summary_numeric"),
+            icon = shiny::icon("calculator")
+          )
+        )
+      ),
+      tabPanel(
         title = translate("상관관계"),
         tabsetPanel(
           tabPanel(
@@ -465,8 +721,7 @@ output$ui_desc_data <- renderUI({
             icon = shiny::icon("stethoscope")
           )
         )
-      )
-      
+      )      
     ) 
   )  
 })

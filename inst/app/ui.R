@@ -135,7 +135,7 @@ ui <- dashboardPage(
   ),
   footer = dashboardFooter(
     left = "By Choonghyun Ryu",
-    right = "bitR, 2021"
+    right = "bitR, 2022"
   ),
   title = 'Statistical Analyzer with R - BitStat',
   skin = 'blue')

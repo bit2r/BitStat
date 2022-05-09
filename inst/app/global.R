@@ -109,9 +109,38 @@ names(element_change_type) <- c(translate("범주형으로"), translate("연속�
                                 translate("정수형으로"), translate("문자형으로"), 
                                 translate("날짜(Y-M-D)로"))
 
+## 통계량 종류
+element_statistics <- list(
+  "n", "na", "mean", "sd", "se_mean", "IQR", "skewness", "kurtosis"
+)
+names(element_statistics) <- c(
+  translate("관측치수"),
+  translate("결측치수"), 
+  translate("산술평균"),
+  translate("표준편차"),
+  translate("표준오차"),
+  translate("사분위수범위"),
+  translate("왜도"),
+  translate("첨도")
+)
+
+## 분위수 종류
+element_quantiles <- list(
+  "p00", "p01", "p05", "p10", "p20", "p25", "p30", "p40", "p50", 
+  "p60", "p70", "p75", "p80", "p90", "p95", "p99", "p100"
+)
+names(element_quantiles) <- c(
+  translate("최솟값"), translate("1%분위"), translate("5%분위"), 
+  translate("10%분위"), translate("20%분위"), translate("1/4분위"), 
+  translate("30%분위"), translate("40%분위"), translate("중위수"), 
+  translate("60%분위"), translate("70%분위"), translate("3/4분위"), 
+  translate("80%분위"), translate("90%분위"), translate("95%분위"), 
+  translate("99%분위"), translate("최댓값")
+)
+
 ## 대상변수 선택 방법
-element_choice_cmatrix <- list("all", "user")
-names(element_choice_cmatrix) <- c(translate("전체"), translate("사용자 선택"))
+element_method_choose_variables <- list("all", "user")
+names(element_method_choose_variables) <- c(translate("전체"), translate("사용자 선택"))
 
 ## 상관계수 종류
 element_corr_method <- list("pearson", 

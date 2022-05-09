@@ -126,14 +126,22 @@ Statistics,Statistics
 비닝 미리보기,Preview Bins
 데이터 분포:,Data distribution:
 최솟값,min
+1%분위,1%th
 5%분위,5%th
 10%분위,10%th
+20%분위,20%th
 1/4분위,Q1
+30%분위,30%th
+40%분위,40%th
 중위수,median
 산술평균,mean
+60%분위,60%th
+70%분위,70%th
 3/4분위,Q3
+80%분위,80%th
 90%분위,90%th
 95%분위,95%th
+99%분위,99%th
 최댓값,max
 데이터 분포 시각화:,Distribution with breaks:
 돗수 분포 시각화:,Bins frequency:
@@ -143,6 +151,21 @@ Statistics,Statistics
 돗수,Frequency
 상대돗수 (백분율),Frequency (%)
 비닝은 정수와 실수만 지원합니다.,Bin only support numeric and integer.
+집계표,Summary Table
+수치형 변수,Numerical Variable
+집계표 설정,Setup Summary Table
+통계량 소수점 자리수:,Statistics digits:
+통계량 종류:,Statistics method:
+분위수 종류:,Quantiles method:
+관측치수,obervation
+결측치수,missing
+표준편차,standard deviation
+표준오차,SEM
+사분위수범위,IQR
+왜도,skewness
+첨도,kurtosis
+수치형 변수 집계 테이블,Summary Table of Numerical Variables
+수치형 변수 플롯,Plot of Numerical Variables
 상관관계,Correlation
 상관검정,Correlation Test
 상관행렬,Correlation Matrix
@@ -160,6 +183,7 @@ Statistics,Statistics
 상관검정 설정,Setup Correlation Tests
 대립가설:,Alternative hypothesis:
 수치형 변수 목록(두개 선택):,Numerical Variables(Choose two):
+수치형 변수 목록(하나이상 선택):,Numerical Variables(Choose one or more):
 수치형 변수 목록(두개이상 선택):,Numerical Variables(Choose two or more):
 피어슨의 적률 상관계수,Pearson’s r statistic
 켄달의 순위 상관계수,Kendall's tau statistic
@@ -175,6 +199,7 @@ Statistics,Statistics
 실제 상관계수 #1는 0보다 작습니다,true #1 is less than 0
 실제 상관계수 #1는 0보다 큽니다,true #1 is greater than 0
 수치변수는 2개를 선택해야 합니다.,You must select two numeric variables.
+수치변수는 1개 이상을 선택해야 합니다.,You must select at least one numeric variables.
 수치변수는 2개 이상을 선택해야 합니다.,You must select at least two numeric variables.
 상관관계 플롯,Correlation Plot
 두 변수의 상관관계,Visualize the relationship between two variables
