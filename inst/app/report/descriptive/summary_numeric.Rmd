@@ -1,0 +1,113 @@
+---
+title: "&nbsp;"
+output: 
+  html_document:
+    number_sections: false
+    toc: false    
+    css: theme.css
+---
+
+```{r prepare, echo=FALSE, message=FALSE, warning=FALSE}
+library(flextable)
+library(dplyr)
+library(dlookr)
+
+id_dataset <- "$id_dataset$"
+variables <- "$variables$"
+statistics <- "$statistics$"
+quantiles <- "$quantiles$"
+digits <- $digits$
+group_flag <- $group_flag$
+group_variable <- "$group_variable$"
+plot_flag <- $plot_flag$  
+```
+
+```{r title-summary-numeric, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+htmltools::h3(
+  BitStat::translate("수치형 변수 집계 테이블")
+)
+```
+
+```{r content-summary-numeric, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+.data <- get("list_datasets", envir = .BitStatEnv) %>% 
+  "[["(id_dataset) %>% 
+  "[["("dataset")
+  
+if (variables != "") {
+  variables <- variables %>% 
+  strsplit(",") %>% 
+  unlist() 
+}
+
+if (statistics != "") {
+  statistics <- statistics %>% 
+  strsplit(",") %>% 
+  unlist() 
+}
+
+if (quantiles != "") {
+  quantiles <- quantiles %>% 
+    stringr::str_remove_all("p") %>% 
+    strsplit(",") %>% 
+    unlist() %>% 
+    as.integer() %>% 
+    "/"(100)
+  
+  statistics <- c(statistics, "quantiles")
+}
+
+if (!group_flag) {
+  if (variables != "") {  
+    summ_numeric <- .data %>% 
+      select(all_of(variables)) %>% 
+      dlookr::describe(statistics = statistics, quantiles = quantiles)     
+  } else {
+    summ_numeric <- .data %>% 
+      dlookr::describe(statistics = statistics, quantiles = quantiles)     
+  }  
+  
+  summ_numeric %>% 
+    flextable::flextable() %>%
+    flextable::colformat_double(digits = digits) %>% 
+    flextable::set_caption(caption = translate("집계표")) %>% 
+    flextable::theme_booktabs() %>% 
+    flextable::flextable_to_rmd()
+} else {
+  group_variable <- group_variable %>% 
+  strsplit(",") %>% 
+  unlist()
+  
+  if (variables != "") {  
+    summ_numeric <- .data %>% 
+      select(all_of(c(variables, group_variable))) %>% 
+      group_by(across(all_of(group_variable))) %>%       
+      dlookr::describe(statistics = statistics, quantiles = quantiles)     
+  } else {
+    summ_numeric <- .data %>% 
+      group_by(across(all_of(group_variable))) %>% 
+      dlookr::describe(statistics = statistics, quantiles = quantiles)     
+  } 
+  
+  summ_numeric %>% 
+    flextable::flextable() %>%
+    flextable::colformat_double(digits = digits) %>% 
+    flextable::set_caption(caption = translate("집계표")) %>% 
+    flextable::theme_booktabs() %>% 
+    flextable::flextable_to_rmd()  
+}
+```
+
+```{r title-plot-numeric, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+if (plot_flag) {
+  htmltools::h3(
+    BitStat::translate("수치형 변수 플롯")
+  )
+}
+```
+
+```{r content-plot-numeric, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%'}
+if (plot_flag) {
+  # plot(corr, base_family = 'NanumSquare')
+}
+```
+
