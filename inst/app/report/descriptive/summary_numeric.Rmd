@@ -105,9 +105,30 @@ if (plot_flag) {
 }
 ```
 
-```{r content-plot-numeric, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%'}
+```{r content-plot-numeric, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%', results='asis'}
 if (plot_flag) {
-  # plot(corr, base_family = 'NanumSquare')
+  if (variables == "") {  
+    variables <- dlookr::find_class(.data, type = "numeric", index = FALSE)   
+  } 
+  
+  variables %>% 
+    purrr::walk(
+      function(variable) {
+        htmltools::h4(
+          glue::glue("{variable}의 분포현황")
+        ) %>% 
+          as.character() %>%
+          cat()  
+        
+        p <- .data %>% 
+          ggplot(aes_string(x = variable)) +
+          geom_density() +
+          labs(title = glue::glue("{variable}의 분포현황")) +
+          hrbrthemes::theme_ipsum(base_family = "NanumSquare")
+        
+        print(p)
+      }
+    )
 }
 ```
 
