@@ -100,7 +100,8 @@ Statistics,Statistics
 범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorganize levels only support factors. If you want, cast it to factor first."
 범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-organizng is only supported up to 30 levels.
 대체 레벨 이름:,Replacement level name:
-대체할 라벨 이름을 입력하세요,Provide name for re-orgnaze levels 변수 이름:,Variable name:
+대체할 라벨 이름을 입력하세요,Provide name for re-orgnaze levels
+변수 이름:,Variable name:
 범주 레벨 변경/병합,Reorganize levels
 변수변환,Transform
 수정 변수 이름:,Variable name for change:
@@ -112,15 +113,22 @@ Statistics,Statistics
 문자형으로,AS character
 날짜(Y-M-D)로,AS date (Y-m-d)
 변환 변수 접미어:,Variable name extension:
-새로 만들 변수의 접미어 입력,Add extension to variable name 변수 형 변환,Change type 변수삭제,Remove variable 형 변환 전 데이터 요약,Summary before change type 형 변환 후 데이터 요약,Summary after change type
-적용 함수:	Apply function:
+새로 만들 변수의 접미어 입력,Add extension to variable name
+변수 형 변환,Change type
+변수삭제,Remove variable
+0형 변환 전 데이터 요약,Summary before change type
+형 변환 후 데이터 요약,Summary after change type
+적용 함수:,Apply function:
 소수점 자리수:,Digits:
 데이터 분포 비교,Compare distributions
 변수변환은 정수와 실수만 지원합니다.,Transform only support numeric and integer.
 비닝 방법:,Binning method:
 범주 레벨 갯수:,Number of bins:
 비닝 컷 포인트:,Breaks:
-오른쪽 폐구간 여부 (right),Right-closed intervals (right) 말단값 포함 여부 (include.lowest),Include extreme (include.lowest) 가능할 경우의 극단값 추가 여부,Append extreme values if necessary 소수점 라벨 표현 자리수 (dig.lab):,Label digits (dig.lab):
+오른쪽 폐구간 여부 (right),Right-closed intervals (right)
+말단값 포함 여부 (include.lowest),Include extreme (include.lowest)
+가능할 경우의 극단값 추가 여부,Append extreme values if necessary
+소수점 라벨 표현 자리수 (dig.lab):,Label digits (dig.lab):
 생성 변수 접미어:,Variable name extension:
 비닝,Bin
 비닝 미리보기,Preview Bins
@@ -166,6 +174,7 @@ Statistics,Statistics
 첨도,kurtosis
 수치형 변수 집계 테이블,Summary Table of Numerical Variables
 수치형 변수 플롯,Plot of Numerical Variables
+#1의 분포 현황,Distribution of #1
 상관관계,Correlation
 상관검정,Correlation Test
 상관행렬,Correlation Matrix

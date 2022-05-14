@@ -11,6 +11,8 @@ output:
 library(flextable)
 library(dplyr)
 library(dlookr)
+library(ggplot2)
+library(ggridges)
 
 id_dataset <- "$id_dataset$"
 variables <- "$variables$"
@@ -33,7 +35,7 @@ htmltools::h3(
   "[["(id_dataset) %>% 
   "[["("dataset")
   
-if (variables != "") {
+if (!variables %in% "") {
   variables <- variables %>% 
   strsplit(",") %>% 
   unlist() 
@@ -57,7 +59,7 @@ if (quantiles != "") {
 }
 
 if (!group_flag) {
-  if (variables != "") {  
+  if (!variables %in% "") {  
     summ_numeric <- .data %>% 
       select(all_of(variables)) %>% 
       dlookr::describe(statistics = statistics, quantiles = quantiles)     
@@ -77,7 +79,7 @@ if (!group_flag) {
   strsplit(",") %>% 
   unlist()
   
-  if (variables != "") {  
+  if (!variables %in% "") {  
     summ_numeric <- .data %>% 
       select(all_of(c(variables, group_variable))) %>% 
       group_by(across(all_of(group_variable))) %>%       
@@ -99,6 +101,8 @@ if (!group_flag) {
 
 ```{r title-plot-numeric, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 if (plot_flag) {
+  htmltools::br()
+  
   htmltools::h3(
     BitStat::translate("수치형 변수 플롯")
   )
@@ -107,28 +111,49 @@ if (plot_flag) {
 
 ```{r content-plot-numeric, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%', results='asis'}
 if (plot_flag) {
-  if (variables == "") {  
+  if (variables %in% "") {  
     variables <- dlookr::find_class(.data, type = "numeric", index = FALSE)   
   } 
   
-  variables %>% 
-    purrr::walk(
-      function(variable) {
-        htmltools::h4(
-          glue::glue("{variable}의 분포현황")
-        ) %>% 
-          as.character() %>%
-          cat()  
-        
-        p <- .data %>% 
-          ggplot(aes_string(x = variable)) +
-          geom_density() +
-          labs(title = glue::glue("{variable}의 분포현황")) +
-          hrbrthemes::theme_ipsum(base_family = "NanumSquare")
-        
-        print(p)
-      }
-    )
+  if (!group_flag) {
+    variables %>% 
+      purrr::walk(
+        function(variable) {
+          htmltools::h4(
+            translate(glue::glue("{variable}의 분포 현황"), "kr", variable)
+          ) %>% 
+            as.character() %>%
+            cat()  
+          
+          p <- .data %>% 
+            ggplot(aes_string(x = variable)) +
+            geom_density() +
+            labs(title = glue::glue("{variable}의 분포 현황")) +
+            hrbrthemes::theme_ipsum(base_family = "NanumSquare")
+          
+          print(p)
+        }
+      )
+  } else {
+    variables %>% 
+      purrr::walk(
+        function(variable) {
+          htmltools::h4(
+            translate(glue::glue("{variable}의 분포 현황"), "kr", variable)
+          ) %>% 
+            as.character() %>%
+            cat()  
+          
+          p <- .data %>% 
+            ggplot(aes_string(x = variable, y = group_variable, group = group_variable)) +
+            geom_density_ridges(fill = "steelblue", alpha = 0.5) +
+            labs(title = glue::glue("{variable}의 분포 현황")) +
+            hrbrthemes::theme_ipsum(base_family = "NanumSquare")
+          
+          print(p)
+        }
+      )    
+  }  
 }
 ```
 

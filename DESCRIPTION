@@ -37,7 +37,8 @@ Imports:
     vroom,
     glue,
     openxlsx,
-    flextable
+    flextable,
+    ggridges
 URL: 
     https://github.com/r2bit/BitStat/
 BugReports: https://github.com/r2bit/BitStat/issues
