@@ -35,7 +35,7 @@ htmltools::h3(
   "[["(id_dataset) %>% 
   "[["("dataset")
   
-if (!variables %in% "") {
+if (!variables[1] %in% "") {
   variables <- variables %>% 
   strsplit(",") %>% 
   unlist() 
@@ -59,7 +59,7 @@ if (quantiles != "") {
 }
 
 if (!group_flag) {
-  if (!variables %in% "") {  
+  if (!variables[1] %in% "") {  
     summ_numeric <- .data %>% 
       select(all_of(variables)) %>% 
       dlookr::describe(statistics = statistics, quantiles = quantiles)     
@@ -111,7 +111,7 @@ if (plot_flag) {
 
 ```{r content-plot-numeric, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%', results='asis'}
 if (plot_flag) {
-  if (variables %in% "") {  
+  if (variables[1] %in% "") {  
     variables <- dlookr::find_class(.data, type = "numeric", index = FALSE)   
   } 
   
@@ -128,13 +128,25 @@ if (plot_flag) {
           p <- .data %>% 
             ggplot(aes_string(x = variable)) +
             geom_density() +
-            labs(title = glue::glue("{variable}의 분포 현황")) +
+            labs(title = translate(glue::glue("{variable}의 분포 현황"), "kr", variable)) +
             hrbrthemes::theme_ipsum(base_family = "NanumSquare")
           
           print(p)
         }
       )
   } else {
+    if (length(group_variable) > 1) {
+      expand_variable <- group_variable[-1]
+      
+      cases <- .data %>% 
+        select(all_of(expand_variable)) %>%
+        unique()
+      
+      group_variable <- group_variable[1]
+    } else {
+      cases <- NULL
+    }
+    
     variables %>% 
       purrr::walk(
         function(variable) {
@@ -144,13 +156,45 @@ if (plot_flag) {
             as.character() %>%
             cat()  
           
-          p <- .data %>% 
-            ggplot(aes_string(x = variable, y = group_variable, group = group_variable)) +
-            geom_density_ridges(fill = "steelblue", alpha = 0.5) +
-            labs(title = glue::glue("{variable}의 분포 현황")) +
-            hrbrthemes::theme_ipsum(base_family = "NanumSquare")
+          if (is.null(cases)) {
+            p <- .data %>% 
+              ggplot(aes_string(x = variable, y = group_variable, group = group_variable)) +
+              geom_density_ridges(fill = "steelblue", alpha = 0.5) +
+              labs(title = translate(glue::glue("{variable}의 분포 현황"), "kr", variable)) +
+              hrbrthemes::theme_ipsum(base_family = "NanumSquare")
           
-          print(p)
+            print(p)
+          } else {
+            cases %>% 
+              NROW() %>% 
+              seq() %>% 
+              purrr::walk(
+                function(x) {
+                  condition <- cases[x, , drop=FALSE] %>% unlist()
+                  labs <- paste(names(condition), condition, sep = "=", collapse = ", ")
+                    
+                  data_sub <- cases[x, , drop=FALSE] %>% 
+                    inner_join(
+                      .data %>% 
+                        mutate_at(vars(all_of(group_variable)), as.character),
+                      by = cases %>% names()
+                    ) 
+                  
+                  htmltools::h5(labs) %>% 
+                    as.character() %>% 
+                    cat()          
+                  
+                  p <- data_sub %>% 
+                  ggplot(aes_string(x = variable, y = group_variable, group = group_variable)) +
+                  geom_density_ridges(fill = "steelblue", alpha = 0.5) +
+                  labs(title = translate(glue::glue("{variable}의 분포 현황"), "kr", variable),
+                       subtitle = labs) +
+                  hrbrthemes::theme_ipsum(base_family = "NanumSquare")
+              
+                print(p)
+                }
+              )  
+          }      
         }
       )    
   }  

@@ -1,4 +1,5 @@
 kr,en
+# 메뉴 #########################################################################
 데이터 선택,Choose Dataset
 데이터,Data
 기술통계,Descriptive Statistics
@@ -7,19 +8,31 @@ kr,en
 분산분석,ANOVA
 보고서,Report
 도움말,Help
+
+# 데이터 =======================================================================
 데이터 준비,Prepare data
 데이터 진단,Diagnose data
 데이터 변환,Transform data
+
+# 데이터 > 데이터 준비 ---------------------------------------------------------
 데이터 업로드,Import data
 데이터셋 관리,Manage datasets
+
+# 데이터 > 데이터 진단 ---------------------------------------------------------
 진단 개요,Overview Diagnosis
 변수별 진단,Diagnose variables
 이상치,Overview outliers
 보고서 작성,Create report
+
+# 데이터 > 데이터 변환 ---------------------------------------------------------
 변수 조작,Manipulate variables
 데이터 정제,Clean data
 데이터 분할,Split data
+
+# 공통 > 데이터셋 선택 =========================================================
 데이터셋:,Dataset:
+
+# 데이터 > 데이터 준비 > 데이터 업로드 -----------------------------------------
 데이터 파일 선택,Choose a data file
 파일 포맷:,File format:
 헤더 포함 여부:,Hearder:
@@ -40,6 +53,8 @@ kr,en
 데이터셋 설명:,Dataset description:
 생성할 데이터의 설명을 입력하세요.,Description of the dataset you want to create
 저장,Save
+
+# 데이터 > 데이터 준비 > 데이터셋 관리 -----------------------------------------
 데이터셋 목록,Dataset list
 데이터셋 아이디,Dataset ID
 데이터셋 이름,Dataset name
@@ -59,14 +74,22 @@ kr,en
 파일 이름:,File name:
 파일 받기,Download
 전체 다운로드,Downloas all
+
+# 데이터 > 데이터 진단 > 진단 개요 ---------------------------------------------
 데이터 진단 개요,Overview of data diagnosis
 데이터 진단 집계:,Summary diagnosis
 데이터 진단 상세:,List of diagnosis
+
+# 데이터 > 데이터 진단 > 변수별 진단 -------------------------------------------
 변수별 데이터 진단,List of diagnosis by variables
 Distribution,Distribution
 Cardinality/Missing,Cardinality/Missing
 Statistics,Statistics
+
+# 데이터 > 데이터 진단 > 이상치 ------------------------------------------------
 변수별 이상치 진단,List of outlers
+
+# 데이터 > 데이터 진단 > 보고서 출력 -------------------------------------------
 보고서 커버 설정,Report cover
 보고서 제목:,Title:
 데이터 진단 보고서,Data Diagnosis Report
@@ -86,6 +109,8 @@ Statistics,Statistics
 색상 테마:,Color theme:
 보고서 작성자:,Author:
 보고서 출력,Reporting
+
+# 데이터 > 데이터 변환 > 변수 조작 ---------------------------------------------
 변수 조작 수행,Variable Manipulation
 변수 목록:,Variable lists:
 조작 방법:,Manipulation method:
@@ -93,19 +118,14 @@ Statistics,Statistics
 형 변환,Change type
 변수 삭제,Remove
 범주 레벨 순서변경,Reorder levels
-범주 레벨 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorder levels only support factors. If you want, cast it to factor first."
-범주 레벨 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-ordering is only supported up to 30 levels.
-범주 레벨 순서변경:,Reorder levels:
-변경/병합 대상 레벨:,Reorganize levels:
-범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorganize levels only support factors. If you want, cast it to factor first."
-범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-organizng is only supported up to 30 levels.
-대체 레벨 이름:,Replacement level name:
-대체할 라벨 이름을 입력하세요,Provide name for re-orgnaze levels
-변수 이름:,Variable name:
-범주 레벨 변경/병합,Reorganize levels
 변수변환,Transform
+비닝,Bin
 수정 변수 이름:,Variable name for change:
+
+# 데이터 > 데이터 변환 > 변수 조작 > 이름변경 ..................................
 변수이름 변경,Change name
+
+# 데이터 > 데이터 변환 > 변수 조작 > 형 변환 ...................................
 변경 데이터 형:,Change variable type:
 범주형으로,AS factor
 연속형으로,AS numeric
@@ -114,14 +134,35 @@ Statistics,Statistics
 날짜(Y-M-D)로,AS date (Y-m-d)
 변환 변수 접미어:,Variable name extension:
 새로 만들 변수의 접미어 입력,Add extension to variable name
-변수 형 변환,Change type
-변수삭제,Remove variable
-0형 변환 전 데이터 요약,Summary before change type
+형 변환 전 데이터 요약,Summary before change type
 형 변환 후 데이터 요약,Summary after change type
+변수 형 변환,Change type
+
+# 데이터 > 데이터 변환 > 변수 조작 > 변수 삭제 .................................
+변수삭제,Remove variable
+
+# 데이터 > 데이터 변환 > 변수 조작 > 범주 레벨 순서변경 ........................
+범주 레벨 순서변경:,Reorder levels:
+범주 레벨 순서변경은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorder levels only support factors. If you want, cast it to factor first."
+범주 레벨 순서변경은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-ordering is only supported up to 30 levels.
+
+# 데이터 > 데이터 변환 > 변수 조작 > 범주 레벨 변경/병합 .......................
+변경/병합 대상 레벨:,Reorganize levels:
+범주 레벨 변경/병합은 범주형 데이터만 지원합니다. 원한다면 먼저 범주형 데이터로 변경 후 진행하세요.,"Reorganize levels only support factors. If you want, cast it to factor first."
+범주 레벨 변경/병합은 범주 레벨의 개수가 30개까지만 지원합니다.,Interactive re-organizng is only supported up to 30 levels.
+대체 레벨 이름:,Replacement level name:
+대체할 라벨 이름을 입력하세요,Provide name for re-orgnaze levels
+변수 이름:,Variable name:
+범주 레벨 변경/병합,Reorganize levels
+
+# 데이터 > 데이터 변환 > 변수 조작 > 변수변환 ..................................
 적용 함수:,Apply function:
 소수점 자리수:,Digits:
+#변수변환,Transform
 데이터 분포 비교,Compare distributions
 변수변환은 정수와 실수만 지원합니다.,Transform only support numeric and integer.
+
+# 데이터 > 데이터 변환 > 변수 조작 > 비닝 ......................................
 비닝 방법:,Binning method:
 범주 레벨 갯수:,Number of bins:
 비닝 컷 포인트:,Breaks:
@@ -130,9 +171,10 @@ Statistics,Statistics
 가능할 경우의 극단값 추가 여부,Append extreme values if necessary
 소수점 라벨 표현 자리수 (dig.lab):,Label digits (dig.lab):
 생성 변수 접미어:,Variable name extension:
-비닝,Bin
+#비닝,Bin
 비닝 미리보기,Preview Bins
 데이터 분포:,Data distribution:
+##### 이후 집계표에 사용할 통계량도 일부 포함했습니다. #########################
 최솟값,min
 1%분위,1%th
 5%분위,5%th
@@ -159,12 +201,22 @@ Statistics,Statistics
 돗수,Frequency
 상대돗수 (백분율),Frequency (%)
 비닝은 정수와 실수만 지원합니다.,Bin only support numeric and integer.
+
+# 기술통계 =====================================================================
 집계표,Summary Table
+상관관계,Correlation
+
+# 기술통계 > 집계표 ------------------------------------------------------------
 수치형 변수,Numerical Variable
+범주형 변수,Categorical Variable
+
+# 기술통계 > 집계표 > 수치형 변수 ..............................................
 집계표 설정,Setup Summary Table
-통계량 소수점 자리수:,Statistics digits:
+대상변수 선택 방법:,Target variable selection type:
+전체,All
+사용자 선택,User choose
+수치형 변수 목록(하나이상 선택):,Numerical Variables(Choose one or more):
 통계량 종류:,Statistics method:
-분위수 종류:,Quantiles method:
 관측치수,obervation
 결측치수,missing
 표준편차,standard deviation
@@ -172,50 +224,72 @@ Statistics,Statistics
 사분위수범위,IQR
 왜도,skewness
 첨도,kurtosis
-수치형 변수 집계 테이블,Summary Table of Numerical Variables
-수치형 변수 플롯,Plot of Numerical Variables
-#1의 분포 현황,Distribution of #1
-상관관계,Correlation
-상관검정,Correlation Test
-상관행렬,Correlation Matrix
-상관행렬 플롯,Correlation Matrix Plot
-상관행렬 설정,Setup Correlation Matrix
-대상변수 선택 방법:,Target variable selection type:
-전체,All
-사용자 선택,User choose
-상관행렬은 정수와 실수만 지원합니다.,Correlation matrix only support numeric and integer.
-상관계수 종류:,Correlation Coefficient method:
+분위수 종류:,Quantiles method:
 범주별 계산,Calculate by category
 범주형 변수 목록:,Categorical variabes:
+통계량 소수점 자리수:,Statistics digits:
 시각화 여부,Plot chart
-상관계수 소수점 자리수:,Coefficient digits:
-상관검정 설정,Setup Correlation Tests
-대립가설:,Alternative hypothesis:
-수치형 변수 목록(두개 선택):,Numerical Variables(Choose two):
-수치형 변수 목록(하나이상 선택):,Numerical Variables(Choose one or more):
+실행,Excute
+수치변수는 1개 이상을 선택해야 합니다.,You must select at least one numeric variables.
+범주별 계산을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.,calculate by category is checked, but categorical variables is not selected. Uncheck or select a variable.
+수치형 변수 집계 테이블,Summary Table of Numerical Variables
+수치형 변수 플롯,Plot of Numerical Variables
+@1의 분포 현황,Distribution of @1
+
+# 기술통계 > 상관관계 ----------------------------------------------------------
+상관행렬,Correlation Matrix
+상관검정,Correlation Test
+
+# 기술통계 > 상관관계 > 상관행렬 ...............................................
+상관행렬 설정,Setup Correlation Matrix
+#대상변수 선택 방법:,Target variable selection type:
+#전체,All
+#사용자 선택,User choose
 수치형 변수 목록(두개이상 선택):,Numerical Variables(Choose two or more):
+#상관행렬은 정수와 실수만 지원합니다.,Correlation matrix only support numeric and integer.-------------> 체크 필요
+상관계수 종류:,Correlation Coefficient method:
 피어슨의 적률 상관계수,Pearson’s r statistic
 켄달의 순위 상관계수,Kendall's tau statistic
 스피어만의 순위 상관계수,Spearman's rho statistic
+#범주별 계산,Calculate by category
+#범주형 변수 목록:,Categorical variabes:
+상관계수 소수점 자리수:,Coefficient digits:
+#시각화 여부,Plot chart
+#실행,Excute
+수치변수는 2개 이상을 선택해야 합니다.,You must select at least two numeric variables.
+#범주별 계산을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.,calculate by category is checked, but categorical variables is not selected. Uncheck or select a variable.
+#상관행렬,Correlation Matrix
+상관행렬 플롯,Correlation Matrix Plot
+
+# 기술통계 > 상관관계 > 상관검정 ...............................................
+상관검정 설정,Setup Correlation Tests
+수치형 변수 목록(두개 선택):,Numerical Variables(Choose two):
+#상관계수 종류:,Correlation Coefficient method:
+#피어슨의 적률 상관계수,Pearson’s r statistic
+#켄달의 순위 상관계수,Kendall's tau statistic
+#스피어만의 순위 상관계수,Spearman's rho statistic
+대립가설:,Alternative hypothesis:
 상관계수 ≠ 0,Correlation Coefficient ≠ 0
 상관계수 < 0,Correlation Coefficient < 0
 상관계수 > 0,Correlation Coefficient > 0
+#범주별 계산,Calculate by category
+#범주형 변수 목록:,Categorical variabes:
+#시각화 여부,Plot chart
+#실행,Excute
+수치변수는 2개를 선택해야 합니다.,You must select two numeric variables.
+#범주별 계산을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.,calculate by category is checked, but categorical variables is not selected. Uncheck or select a variable.
 통계량,Statistic
 대립가설,Alternative hypothesis
 퍼센트 신뢰구간,percent confidence interval
 표본 추정치,Sample estimates
-실제 상관계수 #1는 0이 아닙니다,true #1 is not equal to 0
-실제 상관계수 #1는 0보다 작습니다,true #1 is less than 0
-실제 상관계수 #1는 0보다 큽니다,true #1 is greater than 0
-수치변수는 2개를 선택해야 합니다.,You must select two numeric variables.
-수치변수는 1개 이상을 선택해야 합니다.,You must select at least one numeric variables.
-수치변수는 2개 이상을 선택해야 합니다.,You must select at least two numeric variables.
+실제 상관계수 @1는 0이 아닙니다,true @1 is not equal to 0
+실제 상관계수 @1는 0보다 작습니다,true @1 is less than 0
+실제 상관계수 @1는 0보다 큽니다,true @1 is greater than 0
+관측치의 수가 충분하지 않습니다,not enough finite observations
 상관관계 플롯,Correlation Plot
 두 변수의 상관관계,Visualize the relationship between two variables
-관측치의 수가 충분하지 않습니다,not enough finite observations
-범주별 검정을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.,Test by category is checked, but Categorical Variables is not selected. Uncheck or select a variable.
 데이터 필터링 조건:,Data filtering condition:
-실행,Excute
+
 미입력 오류,No input error
 미선택 오류,Unselected error
 정합성 오류,Consistency error

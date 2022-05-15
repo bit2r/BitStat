@@ -9,10 +9,15 @@
   
   translation <- readr::read_csv(
     trans_csv, 
+    comment = "#",
     col_types = "cc",
     locale = readr::locale(encoding = "UTF-8")
   ) %>% 
     suppressWarnings()
+  
+  if (max(table(translation$kr)) > 1) {
+    message("translate meta file is invalied")
+  }
   
   assign("translation", translation, envir = .BitStatEnv)
   

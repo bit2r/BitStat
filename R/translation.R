@@ -17,7 +17,7 @@ translate <- function(msg, msg_language = "kr",
           translation <<- translation %>% 
             mutate(!!msg_language := stringr::str_replace(
               !!rlang::sym(msg_language), 
-              paste0("#", x), 
+              paste0("@", x), 
               msg_token[x]))
         }
       )
@@ -40,7 +40,7 @@ translate <- function(msg, msg_language = "kr",
           translation <<- translation %>% 
             mutate(!!language := stringr::str_replace(
               !!rlang::sym(language), 
-              paste0("#", x), 
+              paste0("@", x), 
               token[x]))
         }
       )    

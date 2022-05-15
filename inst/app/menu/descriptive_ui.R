@@ -211,7 +211,7 @@ observeEvent(input$runNumericalSummary, {
   }
   
   if (input$is_group_num_summary & length(input$list_cat_var_summary) == 0) {
-    message <- translate("범주별 검정을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
+    message <- translate("범주별 계산을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
     
     # Save the ID for removal later
     notice_id <<- showNotification(message, duration = 0, type = "error")
@@ -449,7 +449,7 @@ observeEvent(input$runCorrelationMatrix, {
   }
   
   if (input$is_group_corr_mat & length(input$list_cat_var_corrmat) == 0) {
-    message <- translate("범주별 검정을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
+    message <- translate("범주별 계산을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
     
     # Save the ID for removal later
     notice_id <<- showNotification(message, duration = 0, type = "error")
@@ -659,7 +659,7 @@ observeEvent(input$runCorrelationTest, {
   }
   
   if (input$is_group_corr_test & length(input$list_cat_var_corrtest) == 0) {
-    message <- translate("범주별 검정을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
+    message <- translate("범주별 계산을 체크했으나 범주형 변수는 선택하지 않았습니다. 체크를 해제하거나 변수를 선택하세요.")
     
     # Save the ID for removal later
     notice_id <<- showNotification(message, duration = 0, type = "error")
