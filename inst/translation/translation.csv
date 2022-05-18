@@ -236,6 +236,14 @@ Statistics,Statistics
 수치형 변수 플롯,Plot of Numerical Variables
 @1의 분포 현황,Distribution of @1
 
+# 기술통계 > 집계표 > 범주형 변수 ..............................................
+#집계표 설정,Setup Summary Table
+범주형 변수 목록(하나이상 선택):,Categorical Variables(Choose one or more):
+범주형 변수는 1개 이상을 선택해야 합니다.,You must select at least one categorical variables.
+범주형 변수 집계 테이블,Summary Table of Categorical Variables
+돗수분포표,Frequency Table
+범주형 변수 플롯,Plot of Categorical Variables
+
 # 기술통계 > 상관관계 ----------------------------------------------------------
 상관행렬,Correlation Matrix
 상관검정,Correlation Test

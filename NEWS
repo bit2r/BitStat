@@ -1,3 +1,14 @@
+CHANGES IN R VERSION 0.5.2:
+  NEW FUCTION LIST:
+  * Discriptive Statistics 
+    - Summary Table 
+      - Numerical Variable (#12)
+      - Categorical Variable (#16)
+  * Support to create report 
+    - html_br() add a new line in html
+    
+ 
+      
 CHANGES IN R VERSION 0.5.1:
   NEW FUCTION LIST:
   * Discriptive Statistics 

@@ -244,6 +244,136 @@ observeEvent(input$runNumericalSummary, {
 
 
 
+##==============================================================================
+## 03.02. 기술통계 > 집계표 > 범주형 변수
+##==============================================================================
+##------------------------------------------------------------------------------
+## 03.02.01. 기술통계 > 집계표 > 범주형 변수 UI 정의
+##------------------------------------------------------------------------------
+output$summary_category <- renderUI({
+  tagList(
+    fluidRow(
+      style = "padding-top:10px;padding-bottom:0px",
+      column(
+        width = 3,
+        wellPanel(
+          style = "padding-top:5px;padding-bottom:10px",
+          h4(translate("집계표 설정")),
+          radioButtons(
+            inputId = "choice_categorical_table", 
+            label = translate("대상변수 선택 방법:"),
+            choices = element_method_choose_variables, 
+            selected = "all"),
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.choice_categorical_table == 'user'",      
+            fluidRow(
+              column(
+                width = 12,
+                uiOutput('list_cat_var_table')
+              )  
+            )    
+          ),          
+          checkboxInput(
+            inputId = "viz_cat_table",
+            label = translate("시각화 여부"),
+            value = FALSE
+          ),      
+          actionButton(
+            inputId = "runCategoricalSummary",
+            label = translate("실행"),
+            icon = icon("cogs"),
+            style = "background-color: #90CAF9; border: none;"
+          )   
+        )
+      ),
+      
+      column(
+        width = 9,
+        wellPanel(
+          style = "padding-top:10px; padding-left:10px; padding-right:10px",
+          htmlOutput("cat_summary", style = "height: 700px;")
+        )
+      )
+    )
+  )
+})
+
+##------------------------------------------------------------------------------
+## 03.02.02. 범주형 변수 목록 생성
+##------------------------------------------------------------------------------
+output$list_cat_var_table <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  list_cat <- dslists()[[id_dataset]]$dataset %>%
+    get_class() %>% 
+    filter(class %in% c("factor", "ordered")) %>% 
+    select(variable) %>% 
+    pull()
+  
+  selectInput(
+    inputId = "list_cat_var_table", 
+    label = translate("범주형 변수 목록(하나이상 선택):"),
+    choices = list_cat,
+    multiple = TRUE,
+    width = "250"
+  )
+})
+
+
+##------------------------------------------------------------------------------
+## 03.02.03. 범주형 변수선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$list_cat_var_table, {
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+})
+
+
+##------------------------------------------------------------------------------
+## 03.02.04. 실행 버튼 클릭 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$runCategoricalSummary, {
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  if (input$choice_categorical_table == "user" & length(input$list_cat_var_table) < 1) {
+    message <- translate("범주형 변수는 1개 이상을 선택해야 합니다.")
+    
+    # Save the ID for removal later
+    notice_id <<- showNotification(message, duration = 0, type = "error")
+    
+    return()
+  }
+  
+  rmd_content <- create_summary_category(
+    id_dataset = id_dataset, 
+    variables =  input$list_num_var_summary,
+    plot = input$viz_num_summary
+  )
+  
+  output$cat_summary <- renderUI({
+    input$runCategoricalSummary
+    
+    tags$iframe(
+      seamless = "seamless",
+      src = "report/cat_summary.html",
+      width = "100%",
+      height = "100%"
+    )
+  })
+})
+
+
+
+
+
+
 ################################################################################
 ## 03. 기술통계 > 상관관계
 ################################################################################
@@ -704,7 +834,12 @@ output$ui_desc_data <- renderUI({
             title = translate("수치형 변수"), 
             uiOutput("summary_numeric"),
             icon = shiny::icon("calculator")
-          )
+          ),
+          tabPanel(
+            title = translate("범주형 변수"),
+            uiOutput("summary_category"),
+            icon = shiny::icon("table")
+          )          
         )
       ),
       tabPanel(
