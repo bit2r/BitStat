@@ -207,10 +207,10 @@ Statistics,Statistics
 상관관계,Correlation
 
 # 기술통계 > 집계표 ------------------------------------------------------------
-수치형 변수,Numerical Variable
-범주형 변수,Categorical Variable
+수치형 변수 통계표,Statistical Table of Numerical Variables
+범주형 변수 돗수분포표,Frequency Table of Categorical Variables
 
-# 기술통계 > 집계표 > 수치형 변수 ..............................................
+# 기술통계 > 집계표 > 수치형 변수 통계표 .......................................
 집계표 설정,Setup Summary Table
 대상변수 선택 방법:,Target variable selection type:
 전체,All
@@ -236,8 +236,9 @@ Statistics,Statistics
 수치형 변수 플롯,Plot of Numerical Variables
 @1의 분포 현황,Distribution of @1
 
-# 기술통계 > 집계표 > 범주형 변수 ..............................................
+# 기술통계 > 집계표 > 범주형 변수 돗수분포표 ...................................
 #집계표 설정,Setup Summary Table
+#대상변수 선택 방법:,Target variable selection type:
 범주형 변수 목록(하나이상 선택):,Categorical Variables(Choose one or more):
 범주형 변수는 1개 이상을 선택해야 합니다.,You must select at least one categorical variables.
 범주형 변수 집계 테이블,Summary Table of Categorical Variables

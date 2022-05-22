@@ -11,6 +11,7 @@ output:
 library(flextable)
 library(dplyr)
 library(dlookr)
+library(ggplot2)
 
 id_dataset <- "$id_dataset$"
 variables <- "$variables$"
@@ -81,93 +82,56 @@ if (plot_flag) {
 
 ```{r content-plot-category, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%', results='asis'}
 if (plot_flag) {
-  if (variables[1] %in% "") {  
-    variables <- dlookr::find_class(.data, type = "numeric", index = FALSE)   
-  } 
+  variables <- attr(summ_category, "variables")
   
-  if (!group_flag) {
-    variables %>% 
-      purrr::walk(
-        function(variable) {
-          htmltools::h4(
-            translate(glue::glue("{variable}의 분포 현황"), "kr", variable)
-          ) %>% 
-            as.character() %>%
-            cat()  
+  variables %>% 
+    purrr::walk(
+      function(x) {
+        variable <- x
+        htmltools::h4(
+          translate(glue::glue("{variable}의 분포 현황"), "kr", variable)
+        ) %>% 
+          as.character() %>%
+          cat()  
+        
+        df <- summ_category %>% 
+          "[["(variable) %>% 
+          select(variable = 1, 2:3) %>% 
+          filter(!is.na(variable))
           
-          p <- .data %>% 
-            ggplot(aes_string(x = variable)) +
-            geom_density() +
-            labs(title = translate(glue::glue("{variable}의 분포 현황"), "kr", variable)) +
-            hrbrthemes::theme_ipsum(base_family = "NanumSquare")
-          
-          print(p)
-        }
-      )
-  } else {
-    if (length(group_variable) > 1) {
-      expand_variable <- group_variable[-1]
-      
-      cases <- .data %>% 
-        select(all_of(expand_variable)) %>%
-        unique()
-      
-      group_variable <- group_variable[1]
-    } else {
-      cases <- NULL
-    }
+        obj <- df %>% 
+          ggplot(aes(variable, n, fill = variable)) +
+          geom_bar(stat = "identity") + 
+          ylab("Frequency") +
+          ggtitle(sprintf("Bar plot of %s", variable)) +
+          xlab(variable) + 
+          theme(legend.position = "None") +
+          theme(plot.title = element_text(hjust = 0.5))
     
-    variables %>% 
-      purrr::walk(
-        function(variable) {
-          htmltools::h4(
-            translate(glue::glue("{variable}의 분포 현황"), "kr", variable)
-          ) %>% 
-            as.character() %>%
-            cat()  
-          
-          if (is.null(cases)) {
-            p <- .data %>% 
-              ggplot(aes_string(x = variable, y = group_variable, group = group_variable)) +
-              geom_density_ridges(fill = "steelblue", alpha = 0.5) +
-              labs(title = translate(glue::glue("{variable}의 분포 현황"), "kr", variable)) +
-              hrbrthemes::theme_ipsum(base_family = "NanumSquare")
-          
-            print(p)
-          } else {
-            cases %>% 
-              NROW() %>% 
-              seq() %>% 
-              purrr::walk(
-                function(x) {
-                  condition <- cases[x, , drop=FALSE] %>% unlist()
-                  labs <- paste(names(condition), condition, sep = "=", collapse = ", ")
-                    
-                  data_sub <- cases[x, , drop=FALSE] %>% 
-                    inner_join(
-                      .data %>% 
-                        mutate_at(vars(all_of(group_variable)), as.character),
-                      by = cases %>% names()
-                    ) 
-                  
-                  htmltools::h5(labs) %>% 
-                    as.character() %>% 
-                    cat()          
-                  
-                  p <- data_sub %>% 
-                  ggplot(aes_string(x = variable, y = group_variable, group = group_variable)) +
-                  geom_density_ridges(fill = "steelblue", alpha = 0.5) +
-                  labs(title = translate(glue::glue("{variable}의 분포 현황"), "kr", variable),
-                       subtitle = labs) +
-                  hrbrthemes::theme_ipsum(base_family = "NanumSquare")
-              
-                print(p)
-                }
-              )  
-          }      
+        n_level <- nrow(df) 
+        if (n_level <= 9) {
+          obj <- obj +
+            dlookr:::theme_typographic("NanumSquare") +
+            hrbrthemes::scale_fill_ipsum() +
+            theme(legend.position = "None",
+                  axis.title.x = element_text(size = 13),
+                  axis.title.y = element_text(size = 13)
+            )      
+        } else {
+          obj <- obj +
+            dlookr:::theme_typographic("NanumSquare") +
+            hrbrthemes::scale_fill_manual(values = rep("#d18975", n_level)) + 
+            theme(legend.position = "None",
+                  axis.title.x = element_text(size = 13),
+                  axis.title.y = element_text(size = 13)
+            )   
         }
-      )    
-  }  
+        
+        suppressWarnings(print(obj))
+    
+        html_br()
+      }
+    )
 }
 ```
 

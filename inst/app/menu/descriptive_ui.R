@@ -2,7 +2,7 @@
 ## 03. 기술통계 > 집계표
 ################################################################################
 ##==============================================================================
-## 03.01. 기술통계 > 집계표 > 수치형 변수
+## 03.01. 기술통계 > 집계표 > 수치 변수 통계표
 ##==============================================================================
 ##------------------------------------------------------------------------------
 ## 03.01.01. 기술통계 > 집계표 > 수치형 변수 UI 정의
@@ -354,7 +354,7 @@ observeEvent(input$runCategoricalSummary, {
   rmd_content <- create_summary_category(
     id_dataset = id_dataset, 
     variables =  input$list_num_var_summary,
-    plot = input$viz_num_summary
+    plot = input$viz_cat_table
   )
   
   output$cat_summary <- renderUI({
@@ -831,12 +831,12 @@ output$ui_desc_data <- renderUI({
         title = translate("집계표"),
         tabsetPanel(
           tabPanel(
-            title = translate("수치형 변수"), 
+            title = translate("수치형 변수 통계표"), 
             uiOutput("summary_numeric"),
             icon = shiny::icon("calculator")
           ),
           tabPanel(
-            title = translate("범주형 변수"),
+            title = translate("범주형 변수 돗수분포표"),
             uiOutput("summary_category"),
             icon = shiny::icon("table")
           )          
