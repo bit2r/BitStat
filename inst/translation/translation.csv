@@ -209,6 +209,7 @@ Statistics,Statistics
 # 기술통계 > 집계표 ------------------------------------------------------------
 수치형 변수 통계표,Statistical Table of Numerical Variables
 범주형 변수 돗수분포표,Frequency Table of Categorical Variables
+범주형 변수 분할표,Contingency Table of Categorical Variables 
 
 # 기술통계 > 집계표 > 수치형 변수 통계표 .......................................
 집계표 설정,Setup Summary Table
@@ -244,6 +245,18 @@ Statistics,Statistics
 범주형 변수 집계 테이블,Summary Table of Categorical Variables
 돗수분포표,Frequency Table
 범주형 변수 플롯,Plot of Categorical Variables
+
+# 기술통계 > 집계표 > 범주형 변수 분할표 .......................................
+#집계표 설정,Setup Summary Table
+행 변수 (한개 선택):,Row variable (select one):
+열 변수 (한개 선택):,Column variable (select one):
+행과 열의 변수가 달라야 합니다.,Row and column variables must be different.
+주변 합 여부,Whether the marginal sum
+주변 합 종류:,Type of marginal sum:
+주변 합,Marginal sum
+행 백분율,Row percentages
+열 백분율,Column percentages
+전체 백분율,Percentages of total
 
 # 기술통계 > 상관관계 ----------------------------------------------------------
 상관행렬,Correlation Matrix

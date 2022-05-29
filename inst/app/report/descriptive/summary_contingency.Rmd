@@ -1,0 +1,127 @@
+---
+title: "&nbsp;"
+output: 
+  html_document:
+    number_sections: false
+    toc: false    
+    css: theme.css
+---
+
+```{r prepare, echo=FALSE, message=FALSE, warning=FALSE}
+library(flextable)
+library(crosstable)
+library(dplyr)
+library(dlookr)
+library(ggplot2)
+
+id_dataset <- "$id_dataset$"
+variable_row <- "$variable_row$"
+variable_col <- "$variable_col$"
+marginal <- $marginal$
+marginal_type <- "$marginal_type$"
+plot_flag <- $plot_flag$  
+```
+
+```{r title-summary-category, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+htmltools::h3(
+  BitStat::translate("범주형 변수 분할표")
+)
+```
+
+```{r content-summary-category, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+variable <- glue::glue("{variable_row} - {variable_col}")
+htmltools::h4(
+  translate(glue::glue("{variable}의 분포 현황"), "kr", variable)
+) %>% 
+  as.character() %>%
+  cat()  
+
+.data <- get("list_datasets", envir = .BitStatEnv) %>% 
+  "[["(id_dataset) %>% 
+  "[["("dataset")
+  
+if (!marginal_type %in% "sum") {
+  marginal <- FALSE
+}
+
+comp_category <- .data %>% 
+  select(all_of(c(variable_row, variable_col))) %>% 
+  dlookr::compare_category()     
+  
+stat <- summary(comp_category, verbose = FALSE, marginal = marginal)
+
+if (marginal_type == "pct_row") {
+  tab <- stat$table[[1]] %>%
+    prop.table(margin = 1) %>% 
+    addmargins(margin = 2) %>% 
+    "*"(100) %>% 
+    round(2)
+  
+  colnames(tab)[NCOL(tab)] <- "<Total>"
+  
+  tab <- tab %>% 
+    as.data.frame.matrix()
+} else if (marginal_type == "pct_col") {
+  tab <- stat$table[[1]] %>%
+    prop.table(margin = 2) %>% 
+    addmargins(margin = 1) %>% 
+    "*"(100) %>% 
+    round(2)
+  
+  rownames(tab)[NROW(tab)] <- "<Total>"
+  
+  tab <- tab %>% 
+    as.data.frame.matrix() %>% 
+    tibble::rownames_to_column(stat$chisq$variable_1)      
+} else if (marginal_type == "pct_tot") {
+  tab <- stat$table[[1]] %>%
+    prop.table() %>% 
+    addmargins(margin = c(1, 2)) %>% 
+    "*"(100) %>% 
+    round(2)
+  
+  rownames(tab)[NROW(tab)] <- "<Total>"
+  colnames(tab)[NCOL(tab)] <- "<Total>"
+  
+  tab <- tab %>% 
+    as.data.frame.matrix() %>% 
+    tibble::rownames_to_column(stat$chisq$variable_1)  
+} else {
+  tab <- stat$table[[1]] %>% 
+    as.data.frame.matrix() %>% 
+    tibble::rownames_to_column(stat$chisq$variable_1)  
+}
+
+tab %>% 
+  flextable::flextable() %>% 
+  flextable::add_header_row(
+    top = TRUE, 
+    values = c("", stat$chisq$variable_2), 
+    colwidths = c(1, NCOL(tab) - 1)
+  ) %>% 
+  flextable::theme_box() %>% 
+  flextable::align(i = 1, align = "left", part = "header") %>% 
+  flextable::flextable_to_rmd()
+
+html_br()
+
+```
+
+```{r title-plot-category, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+if (plot_flag) {
+  htmltools::br()
+  
+  htmltools::h3(
+    BitStat::translate("범주형 변수 플롯")
+  )
+}
+```
+
+```{r content-plot-category, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='75%', results='asis'}
+if (plot_flag) {
+  plot(comp_category)
+  
+  html_br()
+}
+```
+

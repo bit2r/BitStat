@@ -142,7 +142,75 @@ create_summary_category <- function(id_dataset, variables = NULL,
 
 
 ##==============================================================================
-## 01.03. 상관행렬
+## 01.03. 범주형 변수 분할표
+##==============================================================================
+create_summary_contingency <- function(id_dataset, 
+                                       variable_row = NULL, 
+                                       variable_col = NULL, 
+                                       marginal = FALSE,
+                                       marginal_type = "sum",
+                                       plot = TRUE,
+                                       output_dir = glue::glue("{getwd()}/www/report"), 
+                                       output_file = "cat_contingency") {
+  source_rmd  <- "summary_contingency.Rmd"
+  target_rmd <- glue::glue("{output_dir}/{output_file}.Rmd")
+  target_html <- glue::glue("{output_dir}/{output_file}.html")
+  
+  rmd_file <- file.path(system.file(package = "BitStat"), 
+                        "app", "report", "descriptive", source_rmd)
+  flag <- file.copy(from = rmd_file, to = target_rmd)
+  
+  #--Store parameters ----------------------------------------------------------  
+  # id_dataset
+  rmd_content <- sub("\\$id_dataset\\$", id_dataset, 
+                     readLines(target_rmd))
+  cat(rmd_content, file = target_rmd, sep = "\n")
+  
+  # variable_row
+  rmd_content <- sub("\\$variable_row\\$", variable_row, 
+                     readLines(target_rmd))
+  cat(rmd_content, file = target_rmd, sep = "\n")
+  
+  # variable_col
+  rmd_content <- sub("\\$variable_col\\$", variable_col, 
+                     readLines(target_rmd))
+  cat(rmd_content, file = target_rmd, sep = "\n")
+  
+  # marginal
+  rmd_content <- sub("\\$marginal\\$", marginal, 
+                     readLines(target_rmd))
+  cat(rmd_content, file = target_rmd, sep = "\n")
+  
+  # marginal_type
+  rmd_content <- sub("\\$marginal_type\\$", marginal_type, 
+                     readLines(target_rmd))
+  cat(rmd_content, file = target_rmd, sep = "\n")  
+  
+  # flag of plot
+  rmd_content <- sub("\\$plot_flag\\$", plot, 
+                     readLines(target_rmd))
+  cat(rmd_content, file = target_rmd, sep = "\n")  
+  
+  # for non-ASCII in MS-Windows 
+  if (grepl("^mingw", R.version$os)) { 
+    writeLines(iconv(readLines(target_rmd), from = "CP949", to = "UTF8"), 
+               file(target_rmd, encoding="UTF-8"))
+  }
+  
+  rmarkdown::render(
+    target_rmd,
+    output_dir = output_dir,
+    output_file = target_html,
+    envir = new.env(parent = globalenv())
+  )
+  
+  # Rmd 파일을 삭제하지 않으면, 데이터셋(Rmd 파일의 내용)을 바꾸더라도 ifrmae의 html 컨텐츠가 바뀌지 않음
+  unlink(target_rmd)
+}
+
+
+##==============================================================================
+## 01.04. 상관행렬
 ##==============================================================================
 create_mat_corr <- function(id_dataset, variables = NULL, 
                             method = c("pearson", "kendall", "spearman"),
@@ -221,7 +289,7 @@ create_mat_corr <- function(id_dataset, variables = NULL,
 
 
 ##==============================================================================
-## 01.04. 상관 검정
+## 01.05. 상관 검정
 ##==============================================================================
 create_mat_test <- function(id_dataset, variables = NULL, 
                             method = c("pearson", "kendall", "spearman"),

@@ -140,23 +140,39 @@ names(element_quantiles) <- c(
 
 ## 대상변수 선택 방법
 element_method_choose_variables <- list("all", "user")
-names(element_method_choose_variables) <- c(translate("전체"), translate("사용자 선택"))
+names(element_method_choose_variables) <- c(
+  translate("전체"), 
+  translate("사용자 선택")
+)
+
+## 주변 합 종류
+element_marginal_type <- list("sum", "pct_row", "pct_col", "pct_tot")
+names(element_marginal_type) <- c(
+  translate("주변 합"), 
+  translate("행 백분율"),
+  translate("열 백분율"), 
+  translate("전체 백분율")
+)
 
 ## 상관계수 종류
-element_corr_method <- list("pearson", 
-                                   "kendall",
-                                   "spearman")
-names(element_corr_method) <- c(translate("피어슨의 적률 상관계수"), 
-                                       translate("켄달의 순위 상관계수"),
-                                       translate("스피어만의 순위 상관계수"))
+element_corr_method <- list(
+  "pearson", "kendall","spearman"
+)
+names(element_corr_method) <- c(
+  translate("피어슨의 적률 상관계수"), 
+  translate("켄달의 순위 상관계수"),
+  translate("스피어만의 순위 상관계수")
+)
 
 ## 상관검정의 대립가설
-element_alternative_test <- list("two.sided", 
-                              "less",
-                              "greater")
-names(element_alternative_test) <- c(translate("상관계수 ≠ 0"), 
-                                     translate("상관계수 < 0"),
-                                     translate("상관계수 > 0"))
+element_alternative_test <- list(
+  "two.sided", "less", "greater"
+)
+names(element_alternative_test) <- c(
+  translate("상관계수 ≠ 0"), 
+  translate("상관계수 < 0"),
+  translate("상관계수 > 0")
+)
 
 ## load source for tools
 for (file in list.files(c("tools"), pattern = "\\.(r|R)$", full.names = TRUE)) {

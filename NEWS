@@ -3,7 +3,8 @@ CHANGES IN R VERSION 0.5.2:
   * Discriptive Statistics 
     - Summary Table 
       - Numerical Variable (#12)
-      - Categorical Variable (#16)
+      - Frequency Table for Categorical Variable (#16)
+      - Contingency Table for Categorical Variable (#17)
   * Support to create report 
     - html_br() add a new line in html
     

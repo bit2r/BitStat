@@ -245,10 +245,10 @@ observeEvent(input$runNumericalSummary, {
 
 
 ##==============================================================================
-## 03.02. 기술통계 > 집계표 > 범주형 변수
+## 03.02. 기술통계 > 집계표 > 범주형 변수 돗수분포표
 ##==============================================================================
 ##------------------------------------------------------------------------------
-## 03.02.01. 기술통계 > 집계표 > 범주형 변수 UI 정의
+## 03.02.01. 기술통계 > 집계표 > 범주형 변수 돗수분포표 변수 UI 정의
 ##------------------------------------------------------------------------------
 output$summary_category <- renderUI({
   tagList(
@@ -371,6 +371,192 @@ observeEvent(input$runCategoricalSummary, {
 
 
 
+##==============================================================================
+## 03.03. 기술통계 > 집계표 > 범주형 변수 분할표
+##==============================================================================
+##------------------------------------------------------------------------------
+## 03.02.01. 기술통계 > 집계표 > 범주형 변수 분할표 변수 UI 정의
+##------------------------------------------------------------------------------
+output$summary_contingency <- renderUI({
+  tagList(
+    fluidRow(
+      style = "padding-top:10px;padding-bottom:0px",
+      column(
+        width = 3,
+        wellPanel(
+          style = "padding-top:5px;padding-bottom:10px",
+          h4(translate("집계표 설정")),
+          fluidRow(
+            column(
+              width = 12,
+              uiOutput('list_row_contingency')
+            )  
+          ),   
+          fluidRow(
+            column(
+              width = 12,
+              uiOutput('list_col_contingency')
+            )  
+          ),
+          checkboxInput(
+            inputId = "marginal", 
+            label = translate("주변 합 여부"),
+            value = FALSE),
+          conditionalPanel(
+            style = "padding-top:0px;",
+            condition = "input.marginal == true",      
+            fluidRow(
+              column(
+                width = 12,
+                uiOutput('list_marginal_type')
+              )  
+            )    
+          ),            
+          checkboxInput(
+            inputId = "viz_cat_contingency",
+            label = translate("시각화 여부"),
+            value = FALSE
+          ),      
+          actionButton(
+            inputId = "runContingencyTable",
+            label = translate("실행"),
+            icon = icon("cogs"),
+            style = "background-color: #90CAF9; border: none;"
+          )   
+        )
+      ),
+      
+      column(
+        width = 9,
+        wellPanel(
+          style = "padding-top:10px; padding-left:10px; padding-right:10px",
+          htmlOutput("cat_contingency_table", style = "height: 700px;")
+        )
+      )
+    )
+  )
+})
+
+
+##------------------------------------------------------------------------------
+## 03.03.02. 행 변수 목록 생성
+##------------------------------------------------------------------------------
+output$list_row_contingency <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  list_cat <- dslists()[[id_dataset]]$dataset %>%
+    get_class() %>% 
+    filter(class %in% c("factor", "ordered")) %>% 
+    select(variable) %>% 
+    pull()
+  
+  selectInput(
+    inputId = "list_row_contingency", 
+    label = translate("행 변수 (한개 선택):"),
+    choices = list_cat,
+    multiple = FALSE,
+    width = "250"
+  )
+})
+
+
+##------------------------------------------------------------------------------
+## 03.03.03. 열 변수 목록 생성
+##------------------------------------------------------------------------------
+output$list_col_contingency <- renderUI({
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  list_cat <- dslists()[[id_dataset]]$dataset %>%
+    get_class() %>% 
+    filter(class %in% c("factor", "ordered")) %>% 
+    select(variable) %>% 
+    pull()
+  
+  selectInput(
+    inputId = "list_col_contingency", 
+    label = translate("열 변수 (한개 선택):"),
+    choices = list_cat,
+    selected = list_cat[2],
+    multiple = FALSE,
+    width = "250"
+  )
+})
+
+
+##------------------------------------------------------------------------------
+## 03.03.04. 주변 합 목록 생성
+##------------------------------------------------------------------------------
+output$list_marginal_type <- renderUI({
+  selectInput(
+    inputId = "list_marginal_type", 
+    label = translate("주변 합 종류:"),
+    choices = element_marginal_type,
+    multiple = FALSE,
+    width = "250"
+  )
+})
+
+##------------------------------------------------------------------------------
+## 03.03.04. 행 변수 목록 선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$list_row_contingency, {
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+})
+
+##------------------------------------------------------------------------------
+## 03.03.05. 열 변수 목록 선택 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$list_col_contingency, {
+  if (!is.null(notice_id))
+    removeNotification(notice_id)
+  
+  notice_id <<- NULL
+})
+
+##------------------------------------------------------------------------------
+## 03.03.06. 실행 버튼 클릭 이벤트
+##------------------------------------------------------------------------------
+observeEvent(input$runContingencyTable, {
+  req(input$combo_dataset)
+  
+  id_dataset <- input$combo_dataset
+  
+  if (input$list_row_contingency == input$list_col_contingency) {
+    message <- translate("행과 열의 변수가 달라야 합니다.")
+    
+    # Save the ID for removal later
+    notice_id <<- showNotification(message, duration = 0, type = "error")
+    
+    return()
+  }
+  
+  rmd_content <- create_summary_contingency(
+    id_dataset = id_dataset, 
+    variable_row = input$list_row_contingency,
+    variable_col = input$list_col_contingency,
+    marginal = input$marginal,  
+    marginal_type = input$list_marginal_type,  
+    plot = input$viz_cat_contingency
+  )
+  
+  output$cat_contingency_table <- renderUI({
+    input$runContingencyTable
+    
+    tags$iframe(
+      seamless = "seamless",
+      src = "report/cat_contingency.html",
+      width = "100%",
+      height = "100%"
+    )
+  })
+})
 
 
 
@@ -838,8 +1024,13 @@ output$ui_desc_data <- renderUI({
           tabPanel(
             title = translate("범주형 변수 돗수분포표"),
             uiOutput("summary_category"),
+            icon = shiny::icon("list-alt")
+          ),
+          tabPanel(
+            title = translate("범주형 변수 분할표"),
+            uiOutput("summary_contingency"),
             icon = shiny::icon("table")
-          )          
+          )             
         )
       ),
       tabPanel(
