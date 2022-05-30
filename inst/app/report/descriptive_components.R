@@ -182,6 +182,10 @@ create_summary_contingency <- function(id_dataset,
   cat(rmd_content, file = target_rmd, sep = "\n")
   
   # marginal_type
+  if (is.null(marginal_type)) {
+    marginal_type <- "NULL"
+  }
+  
   rmd_content <- sub("\\$marginal_type\\$", marginal_type, 
                      readLines(target_rmd))
   cat(rmd_content, file = target_rmd, sep = "\n")  
@@ -318,7 +322,7 @@ create_mat_test <- function(id_dataset, variables = NULL,
   rmd_content <- sub("\\$id_dataset\\$", id_dataset, 
                      readLines(target_rmd))
   cat(rmd_content, file = target_rmd, sep = "\n")
-
+  
   # variables
   rmd_content <- sub("\\$variables\\$", variables, 
                      readLines(target_rmd))

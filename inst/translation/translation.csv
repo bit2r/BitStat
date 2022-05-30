@@ -257,6 +257,12 @@ Statistics,Statistics
 행 백분율,Row percentages
 열 백분율,Column percentages
 전체 백분율,Percentages of total
+카이-제곱 독립성검정,Chi-Square Test
+행 변수,Row variable
+열 변수,Column variable
+카이-제곱 독립성검정 통계량,Statistic of Chi-squared test
+유의확률,P-value
+자유도,Degree of freedom
 
 # 기술통계 > 상관관계 ----------------------------------------------------------
 상관행렬,Correlation Matrix

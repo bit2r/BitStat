@@ -9,7 +9,6 @@ output:
 
 ```{r prepare, echo=FALSE, message=FALSE, warning=FALSE}
 library(flextable)
-library(crosstable)
 library(dplyr)
 library(dlookr)
 library(ggplot2)
@@ -30,6 +29,7 @@ htmltools::h3(
 
 ```{r content-summary-category, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 variable <- glue::glue("{variable_row} - {variable_col}")
+
 htmltools::h4(
   translate(glue::glue("{variable}의 분포 현황"), "kr", variable)
 ) %>% 
@@ -60,7 +60,8 @@ if (marginal_type == "pct_row") {
   colnames(tab)[NCOL(tab)] <- "<Total>"
   
   tab <- tab %>% 
-    as.data.frame.matrix()
+    as.data.frame.matrix() %>%     
+    tibble::rownames_to_column(variable_row)  
 } else if (marginal_type == "pct_col") {
   tab <- stat$table[[1]] %>%
     prop.table(margin = 2) %>% 
@@ -72,7 +73,7 @@ if (marginal_type == "pct_row") {
   
   tab <- tab %>% 
     as.data.frame.matrix() %>% 
-    tibble::rownames_to_column(stat$chisq$variable_1)      
+    tibble::rownames_to_column(variable_row)     
 } else if (marginal_type == "pct_tot") {
   tab <- stat$table[[1]] %>%
     prop.table() %>% 
@@ -85,18 +86,18 @@ if (marginal_type == "pct_row") {
   
   tab <- tab %>% 
     as.data.frame.matrix() %>% 
-    tibble::rownames_to_column(stat$chisq$variable_1)  
+    tibble::rownames_to_column(variable_row) 
 } else {
   tab <- stat$table[[1]] %>% 
     as.data.frame.matrix() %>% 
-    tibble::rownames_to_column(stat$chisq$variable_1)  
+    tibble::rownames_to_column(variable_row)
 }
 
 tab %>% 
   flextable::flextable() %>% 
   flextable::add_header_row(
     top = TRUE, 
-    values = c("", stat$chisq$variable_2), 
+    values = c("", variable_col), 
     colwidths = c(1, NCOL(tab) - 1)
   ) %>% 
   flextable::theme_box() %>% 
@@ -105,6 +106,27 @@ tab %>%
 
 html_br()
 
+
+htmltools::h4(
+  translate("카이-제곱 독립성검정")
+) %>% 
+  as.character() %>%
+  cat()  
+
+tab_chisq <- stat[["chisq"]]
+names(tab_chisq) <- c(
+  translate("행 변수"),
+  translate("열 변수"),
+  translate("통계량"),
+  translate("카이-제곱 독립성검정 통계량"),
+  translate("자유도")
+)
+
+tab_chisq %>% 
+  flextable::flextable() %>% 
+  flextable::flextable_to_rmd()
+
+html_br()
 ```
 
 ```{r title-plot-category, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
@@ -124,4 +146,3 @@ if (plot_flag) {
   html_br()
 }
 ```
-
