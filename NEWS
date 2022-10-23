@@ -1,3 +1,9 @@
+CHANGES IN R VERSION 0.5.3:
+  MAJOR CHANGES:
+    * Moved the data diagnosis submenu of the data menu to the report menu. (#20) 
+    
+    
+    
 CHANGES IN R VERSION 0.5.2:
   NEW FUCTION LIST:
   * Discriptive Statistics 

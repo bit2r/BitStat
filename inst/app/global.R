@@ -9,10 +9,6 @@
 ##------------------------------------------------------------------------------
 ## 01.01.01. Set the library paths
 ##------------------------------------------------------------------------------
-# .libPaths(c("/hli_appl/home/has01/R/x86_64-pc-linux-gnu-library/3.3",
-#             "/hli_appl/appl/bda/R/x86_64-pc-linux-gnu-library/3.3",
-#             "/opt/microsoft/ropen/3.4.1/lib64/R/library",
-#             "/hli_appl/appl/bda/R/oracle"))
 
 ##------------------------------------------------------------------------------
 ## 01.01.02. Load packages that are related shiny & html
@@ -202,19 +198,19 @@ plotPNG <- function (func, filename = tempfile(fileext = ".png"), width = 400,
   else {
     pngfun <- grDevices::png
   }
-
+  
   pngfun(filename = filename, width = width, height = height, res = res, ...)
-
+  
   op <- graphics::par(mar = rep(0, 4))
-
+  
   tryCatch(graphics::plot.new(), finally = graphics::par(op))
-
+  
   dv <- grDevices::dev.cur()
-
+  
   on.exit(grDevices::dev.off(dv), add = TRUE)
-
+  
   func()
-
+  
   filename
 }
 
@@ -224,33 +220,33 @@ plotPNG <- function (func, filename = tempfile(fileext = ".png"), width = 400,
 renderPlot <- function (expr, width = "auto", height = "auto", res = 72, ...,
                         env = parent.frame(), quoted = FALSE, func = NULL)  {
   installExprFunction(expr, "func", env, quoted, ..stacktraceon = TRUE)
-
+  
   args <- list(...)
-
+  
   if (is.function(width))
     widthWrapper <- reactive({
       width()
     })
   else widthWrapper <- NULL
-
+  
   if (is.function(height))
     heightWrapper <- reactive({
       height()
     })
   else heightWrapper <- NULL
-
+  
   outputFunc <- plotOutput
-
+  
   if (!identical(height, "auto"))
     formals(outputFunc)["height"] <- list(NULL)
-
+  
   return(markRenderFunction(outputFunc, function(shinysession,
                                                  name, ...) {
     if (!is.null(widthWrapper)) width <- widthWrapper()
     if (!is.null(heightWrapper)) height <- heightWrapper()
-
+    
     prefix <- "output_"
-
+    
     if (width == "auto")
       width <- shinysession$clientData[[paste(prefix, name,
                                               "_width", sep = "")]]
@@ -262,9 +258,9 @@ renderPlot <- function (expr, width = "auto", height = "auto", res = 72, ...,
     pixelratio <- shinysession$clientData$pixelratio
     if (is.null(pixelratio))
       pixelratio <- 1
-
+    
     coordmap <- NULL
-
+    
     plotFunc <- function() {
       result <- withVisible(func())
       coordmap <<- NULL
@@ -280,7 +276,7 @@ renderPlot <- function (expr, width = "auto", height = "auto", res = 72, ...,
         coordmap <<- shiny:::getPrevPlotCoordmap(width, height)
       }
     }
-
+    
     outfile <- ..stacktraceoff..(
       do.call(
         plotPNG,
@@ -288,7 +284,7 @@ renderPlot <- function (expr, width = "auto", height = "auto", res = 72, ...,
           res = res * pixelratio, args)
       )
     )
-
+    
     on.exit(unlink(outfile))
     res <- list(src = shinysession$fileUrl(name, outfile,
                                            contentType = "image/png"),
@@ -298,9 +294,7 @@ renderPlot <- function (expr, width = "auto", height = "auto", res = 72, ...,
     if (!is.null(error)) {
       res$error <- error
     }
-
+    
     res
   }))
 }
-
-

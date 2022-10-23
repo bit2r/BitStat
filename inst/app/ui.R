@@ -109,7 +109,8 @@ body <- dashboardBody(
       tabName = "anova"
     ),
     tabItem(
-      tabName = "report"
+      tabName = "report",
+      uiOutput("ui_report_data")
     ),
     tabItem(
       tabName = "help",
