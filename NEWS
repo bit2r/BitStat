@@ -2,7 +2,13 @@ CHANGES IN R VERSION 0.5.3:
   MAJOR CHANGES:
     * Moved the data diagnosis submenu of the data menu to the report menu. (#20) 
     
-    
+  BUG FIXES:
+    * Fixed aggregation criteria error when switching between all variables and 
+      user-selected variables in the 'Summary Table for Numerical Variable'. (#26)
+    * Fixed aggregation criteria error when switching between all variables and 
+      user-selected variables in the 'Frequency Table for Categorical Variable'. (#26)
+
+      
     
 CHANGES IN R VERSION 0.5.2:
   NEW FUCTION LIST:

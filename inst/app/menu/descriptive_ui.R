@@ -201,7 +201,7 @@ observeEvent(input$runNumericalSummary, {
   
   id_dataset <- input$combo_dataset
   
-  if (input$is_group_num_summary == "user" & length(input$list_num_var_summary) < 1) {
+  if (input$choice_numerical_summary == "user" & length(input$list_num_var_summary) < 1) {
     message <- translate("수치변수는 1개 이상을 선택해야 합니다.")
     
     # Save the ID for removal later
@@ -219,9 +219,19 @@ observeEvent(input$runNumericalSummary, {
     return()
   }  
   
+  if (input$choice_numerical_summary == "user") {
+    select_variables <- input$list_num_var_summary  
+  } else {
+    select_variables <- dslists()[[id_dataset]]$dataset %>%
+      get_class() %>% 
+      filter(class %in% c("numeric", "integer")) %>% 
+      select(variable) %>% 
+      pull()    
+  } 
+
   rmd_content <- create_summary_numeric(
     id_dataset = id_dataset, 
-    variables =  input$list_num_var_summary,
+    variables =  select_variables,
     statistics = input$statistics_method,
     quantiles = input$quantiles_method,
     digits = input$diglab_num_summary,
@@ -351,9 +361,19 @@ observeEvent(input$runCategoricalSummary, {
     return()
   }
   
+  if (input$choice_categorical_table == "user") {
+    select_variables <- input$list_cat_var_table
+  } else {
+    select_variables <- dslists()[[id_dataset]]$dataset %>%
+      get_class() %>% 
+      filter(class %in% c("factor", "ordered")) %>% 
+      select(variable) %>% 
+      pull()
+  } 
+  
   rmd_content <- create_summary_category(
     id_dataset = id_dataset, 
-    variables =  input$list_num_var_summary,
+    variables =  select_variables,
     plot = input$viz_cat_table
   )
   
