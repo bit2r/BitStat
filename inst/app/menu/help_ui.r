@@ -35,6 +35,16 @@ output$data_trans <- renderUI({
 })
 
 
+output$descriptive_summary <- renderUI({
+  tags$iframe(
+    seamless = "seamless",
+    src = glue::glue("tmpuser/help/descriptive_summary_{help_language()}.html"),
+    width = "100%",
+    height = "100%"
+  )
+})
+
+
 output$ui_help <- renderUI({
   tagList(
     tabBox(
@@ -61,7 +71,8 @@ output$ui_help <- renderUI({
         title = translate("기술통계"),
         tabsetPanel(
           tabPanel(
-            title = translate("탐색적 데이터분석")
+            title = translate("집계표"),
+            htmlOutput("descriptive_summary", style = "height: 700px;")            
           )
         )
       )

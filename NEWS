@@ -1,6 +1,7 @@
 CHANGES IN R VERSION 0.5.3:
   MAJOR CHANGES:
     * Moved the data diagnosis submenu of the data menu to the report menu. (#20) 
+    * Add help page for `Summary Table` in `Discriptive Statistics` (#23)
     
   BUG FIXES:
     * Fixed aggregation criteria error when switching between all variables and 
