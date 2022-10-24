@@ -227,7 +227,7 @@ Statistics,Statistics
 첨도,kurtosis
 분위수 종류:,Quantiles method:
 범주별 계산,Calculate by category
-범주형 변수 목록:,Categorical variabes:
+범주형 변수 목록:,Categorical variables:
 통계량 소수점 자리수:,Statistics digits:
 시각화 여부,Plot chart
 실행,Excute
@@ -280,7 +280,7 @@ Statistics,Statistics
 켄달의 순위 상관계수,Kendall's tau statistic
 스피어만의 순위 상관계수,Spearman's rho statistic
 #범주별 계산,Calculate by category
-#범주형 변수 목록:,Categorical variabes:
+#범주형 변수 목록:,Categorical variables:
 상관계수 소수점 자리수:,Coefficient digits:
 #시각화 여부,Plot chart
 #실행,Excute
@@ -301,7 +301,7 @@ Statistics,Statistics
 상관계수 < 0,Correlation Coefficient < 0
 상관계수 > 0,Correlation Coefficient > 0
 #범주별 계산,Calculate by category
-#범주형 변수 목록:,Categorical variabes:
+#범주형 변수 목록:,Categorical variables:
 #시각화 여부,Plot chart
 #실행,Excute
 수치변수는 2개를 선택해야 합니다.,You must select two numeric variables.

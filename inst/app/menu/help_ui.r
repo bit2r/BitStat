@@ -45,6 +45,16 @@ output$descriptive_summary <- renderUI({
 })
 
 
+output$descriptive_correlation <- renderUI({
+  tags$iframe(
+    seamless = "seamless",
+    src = glue::glue("tmpuser/help/descriptive_correlation_{help_language()}.html"),
+    width = "100%",
+    height = "100%"
+  )
+})
+
+
 output$ui_help <- renderUI({
   tagList(
     tabBox(
@@ -73,7 +83,11 @@ output$ui_help <- renderUI({
           tabPanel(
             title = translate("집계표"),
             htmlOutput("descriptive_summary", style = "height: 700px;")            
-          )
+          ),
+          tabPanel(
+            title = translate("상관관계"),
+            htmlOutput("descriptive_correlation", style = "height: 700px;")            
+          )          
         )
       )
     ) 
