@@ -183,120 +183,128 @@ div(class = "bg-blue",
 
 Create frequency tables of categorical variables and visualize their distributions.
 
-통계표 기능은 **기술통계 > 집계표 > 범주형 변수 돗수분포표**의 메뉴 체계로 접근합니다.
+The frequency table function is accessed through the menu of **Descriptive Statistics > Summary Table > Frequency Table of Categorical Variables**.
 
 <br>
 
-#### 돗수분포표를 위한 입력 위젯
+#### Input widget for frequency table
 
-- 대상변수 선택 방법:
-    - 레디오 버튼으로 `전체`와 `사용자 선택`에서 하나를 선택합니다.
-    - 전체
-        - 기본 설정값으로 모든 범주형 변수를 분석 대상으로 선정합니다.
-    - 사용자 선택
-        - 사용자가 분석할 범주형 변수를 선택합니다.
-        - 사용자 선택을 체크하면, 
-        - `범주형 변수 목록(하나이상 선택):` 리스트 박스가 나타납니다.
-- 범주형 변수 목록(하나이상 선택):
-    - `대상변수 선택 방법:`에서 `사용자 선택`을 지정했을 때만 나타납니다.
-    - 모든 범주형 변수에서 하나 이상의 변수를 선택할 수 있습니다.
-- 시각화 여부
-    - 돗수분포표와 함께, 범주형 변수의 분포를 파악할 수 있는 `막대그래프(bar plot)`을 함께 출력할지의 여부를 선택합니다.
-    - 체크박스를 체크하면 플롯도 함께 출력됩니다.
-
-<br>
-
-#### 기본 돗수분포표 출력
-
-`범주형 변수 돗수분포표`에서 돗수분포표를 출력하는 방법은 `데이터셋:` 리스트박스에서 `diamonds` 데이터를 선택을 전제로 소개합니다.
-
-기술통계 > 집계표 > 범주형 변수 돗수분포표의 기본 설정으로 `실행` 버튼을 클릭하면 오른쪽 결과 영역에 **범주형 변수의 돗수분포표**가 출력됩니다.
-
-이 기본 설정은 다음과 같습니다.
-
-- 대상변수 선택 방법:
-    - 전체
-- 시각화 여부
-    - 미 체크
-
-![범주형 변수의 돗수분포표](img/frequency_all_variable.png)
+- Target variable selection type:
+    - Select one from `All` and `Custom` with the radio button.
+    - All
+        - By default, all categorical variables are selected for analysis.
+    - User choose
+        - The user selects a categorical variable to analyze.
+        - If user selection is checked, 
+        - a list box of `Categorical Variables(Choose one or more):` will appear.
+- Categorical Variables(Choose one or more):
+    - Appears only when `User choose` is specified in `Target variable selection type:`.
+    - You can select one or more variables from any categorical variable.
+- Plot chart
+    - Select whether to output a 'bar plot' that can identify the distribution of categorical variables along with the frequency table.
+    - If the check box is checked, the plot is also output.    
 
 <br>
 
-### 범주형 변수 분할표
+#### Frequency table of default settings
 
-두 범주형 변수의 분할표(contingency table)를 작성하고 분포를 시각화합니다.
+As the default setting of Descriptive Statistics > Summary Table > Frequency Table of Categorical Variables, if you click the `Execute` button, the **frequency table** is output in the right result area.
 
-통계표 기능은 **기술통계 > 집계표 > 범주형 변수 분할표**의 메뉴 체계로 접근합니다.
+The settings for the frequency table are now defined as:
 
-<br>
+- Target variable selection type:
+    - All
+- Plot chart
+    - not checked
 
-#### 분할표를 위한 입력 위젯
-
-- 행 변수 (한개 선택):
-    - 분할표에세 행에 배치할 범주형 변수를 하나를 선택합니다.
-- 열 변수 (한개 선택):      
-    - 분할표에세 열에 배치할 범주형 변수를 하나를 선택합니다.
-- 주변 합 여부
-    - 생성한 분할표에 주변 합(marginal) 값의 출력 여부를 선택합니다.
-    - 체크 박스에 체크하면, `주변 합 종류:` 리스트 박스가 출력됩니다.
-- 주변 합 종류:
-    - 분할표의 주변합에 출력할 집계 방법을 선택합니다.
-    - `주변 합`, `행 백분율`, `열 백분율`, `전체 백분율`에서 하나를 선택합니다.
-    - 기본값은 `주변 합`입니다.
-- 시각화 여부
-    - 분할표와 함께, 두 범주형 변수의 분포를 파악할 수 있는 `모자이크플롯(mosaic plot)`을 함께 출력할지의 여부를 선택합니다.
-    - 체크박스를 체크하면 플롯도 함께 출력됩니다.
+![Frequency table for categorical variables](img/frequency_all_variable_en.png)
 
 <br>
 
-#### 기본 분할표 출력
 
-기술통계 > 집계표 > 범주형 변수 분할표의 기본 설정으로 `실행` 버튼을 클릭하면 오른쪽 결과 영역에 **두 범주형 변수의 분할표**가 출력됩니다.
+#### Frequency table with visualization
 
-이 기본 설정은 다음과 같습니다.
+If you check the `Plot chart` check box, a `bar plot` is output after the frequency table to understand the distribution of categorical variables.
 
-- 행 변수 (한개 선택):
+The following is the result when the `Plot chart` check box is checked. Bar plots are visualized for each selected categorical variable along with a frequency table.
+
+![Frequency table with visualization](img/frequency_plot_en.png)
+
+<br>
+
+### Contingency Table of Categorical Variables
+
+Compute the contingency table of two categorical variables and visualize the distribution.
+
+The contingency table function is accessed through the menu of **Descriptive Statistics > Summary Table > Contingency Table of Categorical Variables**.
+
+<br>
+
+#### Input widget for contingency table
+
+- Row variable (select one):
+    - Select one categorical variable to place in a row of the contingency table.
+- Column variable (select one):
+    - Select one categorical variable to place in a column of the contingency table.
+- Whether the marginal sum
+    - Select whether to output marginal values to the created contingency table.
+    - If the check box is checked, a list box of `Type of marginal sum:` is displayed.
+- Type of marginal sum:
+    - Select the aggregation method to output to the marginal sum of the contingency table.
+    - Choose one from `Marginal sum`, `Row percentages`, `Column percentages`, `Percentages of total`.
+    - `Marginal sum` is selected by default.    
+- Plot chart
+    - Select whether to output a 'mosaic plot' that can identify the distribution of two categorical variables along with the contingency table.
+    - If the check box is checked, the plot is also output.    
+<br>
+
+#### Contingency table of default selection
+
+As the default setting of `Descriptive Statistics > Summary Table > Contingency Table of Categorical Variables`, click the `Execute` button to output **contingency table for two categorical variables** in the right result area.
+
+The settings for the contingency table are now defined as:
+
+- Row variable (select one):
     - `cut`
-- 열 변수 (한개 선택):      
+- Column variable (select one):  
     - `color`
-- 주변 합 여부
-    - 미 체크
-- 시각화 여부
-    - 미 체크
+- Whether the marginal sum
+    - Not checked
+- Plot chart
+    - Not checked
     
-![두 범주형 변수의 분할표](img/contingency_select_variable.png)
+![Contingency table for two categorical variables](img/contingency_select_variable_en.png)
 
 
 <br>
 
-#### 주변합 포함 분할표 출력
+#### Contingency table with marginal sum
 
-분할표에 개별 행/열의 집계를 위한 주변 합을 추가할 수 있습니다.
+You can add marginal sums for aggregation of individual rows/columns to a contingency table.
 
-- 행 변수 (한개 선택):
+- Row variable (select one):
     - `cut`
-- 열 변수 (한개 선택):      
+- Column variable (select one):  
     - `color`
-- 주변 합 여부
-    - 체크
-- 주변 합 종류:
-    - `주변 합`
-- 시각화 여부
-    - 미 체크
+- Whether the marginal sum
+    - Checked
+- Type of marginal sum:
+    - `Marginal sum`
+- Plot chart
+    - Not checked
     
-상기 조건으로 실행하면 다음과 같은 분할표가 출력됩니다.
+The contingency table executed under the above conditions is output as follows.
 
-![주변합을 포함한 두 범주형 변수 분할표](img/contingency_marginal.png)
+![Contingency table with marginal sum](img/contingency_marginal_en.png)
 
 <br>
 
-#### 시각화와 함께 분할표 출력
+#### Contingency table with visualization
 
-`시각화 여부` 체크 박스를 체크하면, 두 범주형 변수의 분포를 파악할 수 있는 `모자이크플롯(mosaic plot)`을 함께 출력할 수 있습니다.
+If you check the `Plot chart` check box, you can output a `mosaic plot` that can identify the distribution of two categorical variables.
 
-다음은 `시각화 여부` 체크 박스를 체크한 경우의 결과입니다. 분할표로 출력된 두 범주형 변수의 분포를 파악할 수 있는 플롯이 출력됩니다.
+The following is the result when the `Plot chart` check box is checked. A plot is output to determine the distribution of the two categorical variables output as a contingency table.
 
-![시각화 포함 분할표](img/contingency_plot.png)
+![Contingency table with visualization](img/contingency_plot_en.png)
 
 
