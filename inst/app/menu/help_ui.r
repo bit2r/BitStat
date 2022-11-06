@@ -67,14 +67,11 @@ output$ui_help <- renderUI({
             htmlOutput("data_prepare", style = "height: 700px;")
           ),
           tabPanel(
-            title = translate("데이터 진단"),
-            htmlOutput("data_disgnose", style = "height: 700px;")            
-          ),
-          tabPanel(
             title = translate("데이터 변환"),
             htmlOutput("data_trans", style = "height: 700px;")            
           )          
-        )
+        ),
+        icon = icon("database")
       ),
       
       tabPanel(
@@ -88,8 +85,20 @@ output$ui_help <- renderUI({
             title = translate("상관관계"),
             htmlOutput("descriptive_correlation", style = "height: 700px;")            
           )          
-        )
-      )
+        ),
+        icon = icon("calculator")
+      ),
+      
+      tabPanel(
+        title = translate("보고서"),
+        tabsetPanel(
+          tabPanel(
+            title = translate("데이터 진단"),
+            htmlOutput("data_disgnose", style = "height: 700px;")            
+          )      
+        ),
+        icon = icon("file-pdf")
+      )      
     ) 
   )  
 })

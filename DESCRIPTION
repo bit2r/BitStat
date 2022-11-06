@@ -1,7 +1,7 @@
 Package: BitStat
 Title: Statistical Analytics using R and Shiny
-Version: 0.5.3.9002
-Date: 2022-10-30
+Version: 0.5.4.9000
+Date: 2022-11-07
 Authors@R: c(
   person("Choonghyun", "Ryu",, "choonghyun.ryu@gmail.com", role = c("aut", "cre")),
   person(given = "bitR", role = c("cph"))

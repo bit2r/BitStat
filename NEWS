@@ -1,7 +1,17 @@
+CHANGES IN R VERSION 0.5.4:
+  MAJOR CHANGES:
+    * Add help page for `Transform data` in `Data`. (#29)
+    
+  BUG FIXES:
+    * Fixed an error that occurred when the name of the variable to contain 
+      the result of merging the levels does not exist in the existing data set. (#28)
+
+      
+      
 CHANGES IN R VERSION 0.5.3:
   MAJOR CHANGES:
     * Moved the data diagnosis submenu of the data menu to the report menu. (#20) 
-    * Add help page for `Summary Table` in `Discriptive Statistics` (#23)
+    * Add help page for `Summary Table` in `Discriptive Statistics`. (#23)
     
   BUG FIXES:
     * Fixed aggregation criteria error when switching between all variables and 

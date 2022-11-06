@@ -1515,15 +1515,19 @@ observeEvent(input$reorgVariable, {
   
   datasets <- dslists()
   
-  reorder <- function(x, reorg_name) {
-    ordered(x, levels = reorg_name)
-  }
-  
   id_dataset <- input$combo_dataset
+  # dfm <- datasets[[id_dataset]]$dataset %>% 
+  #   mutate_at(vars(input$reorg_variable_name), refactor, 
+  #             target_levels = input$reorg_levels, 
+  #             replce_levels = input$new_levels)
+  
   dfm <- datasets[[id_dataset]]$dataset %>% 
-    mutate_at(vars(input$reorg_variable_name), refactor, 
-              target_levels = input$reorg_levels, 
-              replce_levels = input$new_levels)
+    mutate(!! input$reorg_variable_name := refactor(
+        !! sym(reorg_name),
+        target_levels = input$reorg_levels, 
+        replce_levels = input$new_levels
+      ) 
+    )
   
   datasets[[id_dataset]]$dataset <- dfm
   
